@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Detalles del Gallo{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="card shadow border-0">
+    <div class="card-header bg-primary bg-gradient text-white d-flex justify-content-between align-items-center">
+      <h2 class="mb-0 fs-4">
+        <i class="bi bi-info-circle-fill me-2"></i>Datos del Gallo
+      </h2>
+      <span class="badge bg-light text-primary fs-5">{{ gallo.nroPlaca }}</span>
+    </div>
+    
+    <div class="card-body">
+      <div class="row g-4">
+        <!-- Columna de imagen -->
+        <div class="col-md-4 text-center">
+          <div class="position-relative mb-3">
+            {% if gallo.nombre_img %}
+              <img src="{{ gallo.nombre_img.url }}" class="img-fluid rounded shadow-sm" alt="Imagen del gallo {{ gallo.nroPlaca }}">
+              <div class="position-absolute bottom-0 end-0">
+                <span class="badge rounded-pill bg-dark mb-2 me-2">
+                  <i class="bi bi-camera-fill me-1"></i>Foto
+                </span>
+              </div>
+            {% else %}
+              <div class="border rounded p-5 bg-light d-flex justify-content-center align-items-center" style="min-height: 200px;">
+                <div class="text-muted">
+                  <i class="bi bi-image fs-1 d-block mb-2"></i>
+                  <span>Sin imagen</span>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+          
+          <div class="d-grid gap-2 mt-3">
+            <a href="{% url 'index' %}" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left me-1"></i>Volver al listado
+            </a>
+          </div>
+        </div>
+        
+        <!-- Columna de información -->
+        <div class="col-md-8">
+          <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-header bg-light">
+              <h5 class="card-title mb-0">
+                <i class="bi bi-list-ul me-2"></i>Información principal
+              </h5>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                  <tbody>
+                    <tr>
+                      <th class="ps-3" style="width: 35%;">
+                        <i class="bi bi-palette me-2"></i>Color
+                      </th>
+                      <td>{{ gallo.color }}</td>
+                    </tr>
+                    <tr>
+                      <th class="ps-3">
+                        <i class="bi bi-gender-ambiguous me-2"></i>Sexo
+                      </th>
+                      <td>
+                        <span class="badge {% if gallo.sexo == 'M' %}bg-primary{% else %}bg-danger{% endif %}">
+                          {{ gallo.get_sexo_display }}
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th class="ps-3">
+                        <i class="bi bi-tags me-2"></i>Tipo
+                      </th>
+                      <td>{{ gallo.get_tipoGallo_display }}</td>
+                    </tr>
+                    <tr>
+                      <th class="ps-3">
+                        <i class="bi bi-calendar-date me-2"></i>Fecha Nacimiento
+                      </th>
+                      <td>{{ gallo.fechaNac }}</td>
+                    </tr>
+                    <tr>
+                      <th class="ps-3">
+                        <i class="bi bi-chat-left-text me-2"></i>Observaciones
+                      </th>
+                      <td>
+                        {% if gallo.observaciones %}
+                          {{ gallo.observaciones }}
+                        {% else %}
+                          <span class="text-muted fst-italic">Sin observaciones</span>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Genealogía -->
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-light">
+              <h5 class="card-title mb-0">
+                <i class="bi bi-diagram-3 me-2"></i>Genealogía
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <!-- Padre -->
+                <div class="col-sm-6">
+                  <div class="card h-100 {% if gallo.placaPadre %}border-primary{% else %}border-light{% endif %}">
+                    <div class="card-header {% if gallo.placaPadre %}bg-primary text-white{% else %}bg-light{% endif %}">
+                      <h6 class="mb-0">
+                        <i class="bi bi-gender-male me-1"></i>Padre
+                      </h6>
+                    </div>
+                    <div class="card-body">
+                      {% if gallo.placaPadre %}
+                        <p class="card-text mb-2">
+                          <strong>Placa:</strong> {{ gallo.placaPadre.nroPlaca }}
+                        </p>
+                        <p class="card-text mb-2">
+                          <strong>Color:</strong> {{ gallo.placaPadre.color }}
+                        </p>
+                        <div class="d-grid mt-3">
+                          <a href="{% url 'ver' gallo.placaPadre.nroPlaca %}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-eye me-1"></i>Ver detalles
+                          </a>
+                        </div>
+                      {% else %}
+                        <div class="text-center text-muted py-3">
+                          <i class="bi bi-x-circle fs-3 d-block mb-2"></i>
+                          No tiene padre registrado
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Madre -->
+                <div class="col-sm-6">
+                  <div class="card h-100 {% if gallo.placaMadre %}border-danger{% else %}border-light{% endif %}">
+                    <div class="card-header {% if gallo.placaMadre %}bg-danger text-white{% else %}bg-light{% endif %}">
+                      <h6 class="mb-0">
+                        <i class="bi bi-gender-female me-1"></i>Madre
+                      </h6>
+                    </div>
+                    <div class="card-body">
+                      {% if gallo.placaMadre %}
+                        <p class="card-text mb-2">
+                          <strong>Placa:</strong> {{ gallo.placaMadre.nroPlaca }}
+                        </p>
+                        <p class="card-text mb-2">
+                          <strong>Color:</strong> {{ gallo.placaMadre.color }}
+                        </p>
+                        <div class="d-grid mt-3">
+                          <a href="{% url 'ver' gallo.placaMadre.nroPlaca %}" class="btn btn-sm btn-danger">
+                            <i class="bi bi-eye me-1"></i>Ver detalles
+                          </a>
+                        </div>
+                      {% else %}
+                        <div class="text-center text-muted py-3">
+                          <i class="bi bi-x-circle fs-3 d-block mb-2"></i>
+                          No tiene madre registrada
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Botones de acción -->
+          <div class="d-flex gap-2 justify-content-end mt-4">
+            <a href="{% url 'editar' gallo.nroPlaca %}" class="btn btn-warning">
+              <i class="bi bi-pencil-square me-1"></i>Editar
+            </a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#eliminarModal">
+              <i class="bi bi-trash me-1"></i>Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación de eliminación -->
+<div class="modal fade" id="eliminarModal" tabindex="-1" aria-labelledby="eliminarModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="eliminarModalLabel">Confirmar eliminación</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Está seguro que desea eliminar el gallo con placa <strong>{{ gallo.nroPlaca }}</strong>?</p>
+        <p class="text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Esta acción no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <form action="{% url 'eliminar' gallo.nroPlaca %}" method="post" class="d-inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Confirmar eliminación</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

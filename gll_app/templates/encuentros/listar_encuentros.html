@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Encuentros</h2>
+<a href="{% url 'crear_encuentro' %}" class="btn btn-primary mb-3">Nuevo Encuentro</a>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Fecha</th>
+      <th>Galpón 1</th>
+      <th>Galpón 2</th>
+      <th>Ganador</th>
+      <th>Participantes</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for e in encuentros %}
+    <tr>
+      <td>{{ e.idEncuentro }}</td>
+      <td>{{ e.fechaYHora }}</td>
+      <td>{{ e.galpon1 }}</td>
+      <td>{{ e.galpon2 }}</td>
+      <td>{{ e.ganador }}</td>
+      <td>
+        Participantes: 
+        {% for p in e.participantesenencuentro_set.all %}
+          {{ p.idParticipante }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+        <br>
+        Número de participantes: {{ e.participantesenencuentro_set.count }}
+      </td>
+    
+      <td>
+        <!-- botones editar/eliminar más adelante -->
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

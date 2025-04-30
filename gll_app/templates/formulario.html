@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+{% block title %}{% if form.instance.pk %}Editar{% else %}Crear{% endif %} Gallo{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary bg-gradient text-white">
+      <h2 class="mb-0 fs-4">{% if form.instance.pk %}Editar{% else %}Registrar{% endif %} Gallo</h2>
+    </div>
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+        
+        <div class="row g-3">
+          <!-- Datos básicos -->
+          <div class="col-md-6">
+            <div class="form-floating mb-3">
+              {{ form.nroPlaca }}
+              <label for="{{ form.nroPlaca.id_for_label }}">Número de Placa</label>
+              {% if form.nroPlaca.errors %}
+                <div class="invalid-feedback d-block">{{ form.nroPlaca.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <div class="form-floating mb-3">
+              {{ form.fechaNac }}
+              <label for="{{ form.fechaNac.id_for_label }}">Fecha de Nacimiento</label>
+              {% if form.fechaNac.errors %}
+                <div class="invalid-feedback d-block">{{ form.fechaNac.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+          
+          <div class="col-md-4">
+            <div class="form-floating mb-3">
+              {{ form.color }}
+              <label for="{{ form.color.id_for_label }}">Color</label>
+              {% if form.color.errors %}
+                <div class="invalid-feedback d-block">{{ form.color.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+          
+          <div class="col-md-4">
+            <div class="form-floating mb-3">
+              {{ form.sexo }}
+              <label for="{{ form.sexo.id_for_label }}">Sexo</label>
+              {% if form.sexo.errors %}
+                <div class="invalid-feedback d-block">{{ form.sexo.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+          
+          <div class="col-md-4">
+            <div class="form-floating mb-3">
+              {{ form.tipoGallo }}
+              <label for="{{ form.tipoGallo.id_for_label }}">Tipo de Gallo</label>
+              {% if form.tipoGallo.errors %}
+                <div class="invalid-feedback d-block">{{ form.tipoGallo.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+          
+          <div class="col-12">
+            <div class="form-floating mb-3">
+              {{ form.observaciones }}
+              <label for="{{ form.observaciones.id_for_label }}">Observaciones</label>
+              {% if form.observaciones.errors %}
+                <div class="invalid-feedback d-block">{{ form.observaciones.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+          
+          <div class="col-12 mb-3">
+            <label for="{{ form.nombre_img.id_for_label }}" class="form-label">Fotografía</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-camera-fill"></i></span>
+              {{ form.nombre_img }}
+            </div>
+            {% if form.nombre_img.errors %}
+              <div class="invalid-feedback d-block">{{ form.nombre_img.errors }}</div>
+            {% endif %}
+            <div class="form-text">Seleccione una imagen del ave para su registro.</div>
+          </div>
+        </div>
+
+        <!-- Genealogía -->
+        <div class="card mt-4 mb-4 border-primary-subtle">
+          <div class="card-header bg-primary-subtle">
+            <h5 class="card-title mb-0">Genealogía</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Padre</label>
+                <div class="d-flex align-items-center">
+                  <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalPadre">
+                    <i class="bi bi-search me-1"></i> Seleccionar Padre
+                  </button>
+                  <input type="hidden" id="inputPadre" name="placaPadre" value="{{ padre_sel|default_if_none:'' }}">
+                  <span id="padreSeleccionado" class="badge bg-success ms-2 {% if not padre_sel %}d-none{% endif %}">
+                    {% if padre_sel %}Placa: {{ padre_sel }}{% endif %}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Madre</label>
+                <div class="d-flex align-items-center">
+                  <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalMadre">
+                    <i class="bi bi-search me-1"></i> Seleccionar Madre
+                  </button>
+                  <input type="hidden" id="inputMadre" name="placaMadre" value="{{ madre_sel|default_if_none:'' }}">
+                  <span id="madreSeleccionada" class="badge bg-success ms-2 {% if not madre_sel %}d-none{% endif %}">
+                    {% if madre_sel %}Placa: {{ madre_sel }}{% endif %}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+          <a href="{% url 'index' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+          </a>
+          <button type="submit" class="btn btn-success px-4">
+            <i class="bi bi-save"></i> Guardar Registro
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Padre -->
+<div class="modal fade" id="modalPadre" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="bi bi-gender-male me-2"></i>Seleccionar Padre</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-hover table-striped">
+            <thead class="table-light">
+              <tr>
+                <th>Placa</th>
+                <th>Color</th>
+                <th class="text-end">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for g in gallos %}
+                {% if g.sexo == 'M' %}
+                <tr>
+                  <td><span class="fw-bold">{{ g.nroPlaca }}</span></td>
+                  <td>{{ g.color }}</td>
+                  <td class="text-end">
+                    <button type="button"
+                            class="btn btn-sm btn-success seleccionar-padre"
+                            data-placa="{{ g.nroPlaca }}"
+                            data-bs-dismiss="modal">
+                      <i class="bi bi-check-circle me-1"></i> Seleccionar
+                    </button>
+                  </td>
+                </tr>
+                {% endif %}
+              {% empty %}
+                <tr>
+                  <td colspan="3" class="text-center py-3 text-muted">
+                    <i class="bi bi-exclamation-circle me-2"></i>No hay gallos macho disponibles.
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Madre -->
+<div class="modal fade" id="modalMadre" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title"><i class="bi bi-gender-female me-2"></i>Seleccionar Madre</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-hover table-striped">
+            <thead class="table-light">
+              <tr>
+                <th>Placa</th>
+                <th>Color</th>
+                <th class="text-end">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for g in gallos %}
+                {% if g.sexo == 'H' %}
+                <tr>
+                  <td><span class="fw-bold">{{ g.nroPlaca }}</span></td>
+                  <td>{{ g.color }}</td>
+                  <td class="text-end">
+                    <button type="button"
+                            class="btn btn-sm btn-danger seleccionar-madre"
+                            data-placa="{{ g.nroPlaca }}"
+                            data-bs-dismiss="modal">
+                      <i class="bi bi-check-circle me-1"></i> Seleccionar
+                    </button>
+                  </td>
+                </tr>
+                {% endif %}
+              {% empty %}
+                <tr>
+                  <td colspan="3" class="text-center py-3 text-muted">
+                    <i class="bi bi-exclamation-circle me-2"></i>No hay gallinas disponibles.
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Inicialización de validación de Bootstrap
+  (() => {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+
+  // Selección de padre
+  document.querySelectorAll('.seleccionar-padre').forEach(btn => {
+    btn.onclick = () => {
+      const placa = btn.dataset.placa;
+      document.getElementById('inputPadre').value = placa;
+      const badge = document.getElementById('padreSeleccionado');
+      badge.textContent = `Placa: ${placa}`;
+      badge.classList.remove('d-none');
+    };
+  });
+
+  // Selección de madre
+  document.querySelectorAll('.seleccionar-madre').forEach(btn => {
+    btn.onclick = () => {
+      const placa = btn.dataset.placa;
+      document.getElementById('inputMadre').value = placa;
+      const badge = document.getElementById('madreSeleccionada');
+      badge.textContent = `Placa: ${placa}`;
+      badge.classList.remove('d-none');
+    };
+  });
+
+  // Mejora visual para el input de archivo
+  document.getElementById('{{ form.nombre_img.id_for_label }}').classList.add('form-control');
+</script>
+{% endblock %}
