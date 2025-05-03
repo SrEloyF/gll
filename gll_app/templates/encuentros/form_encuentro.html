@@ -1,0 +1,380 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h2 class="mb-0">
+        <i class="bi bi-calendar-event me-2"></i>{{ titulo|default:"Registrar encuentro" }}
+      </h2>
+    </div>
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data" id="encuentroForm"
+        action="{% if encuentro %}{% url 'editar_encuentro' encuentro.idEncuentro %}{% else %}{% url 'crear_encuentro' %}{% endif %}" class="needs-validation" novalidate>
+
+        {% csrf_token %}
+
+        <!-- Primera fila del formulario -->
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label for="{{ form.fechaYHora.id_for_label }}" class="form-label">
+              <i class="bi bi-calendar2-date me-1"></i>{{ form.fechaYHora.label }}
+            </label>
+            <div class="input-group">
+              {{ form.fechaYHora }}
+              <span class="input-group-text bg-light">
+                <i class="bi bi-calendar-date text-primary"></i>
+              </span>
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <label for="{{ form.video.id_for_label }}" class="form-label">
+              <i class="bi bi-camera-video me-1"></i>{{ form.video.label }}
+            </label>
+          
+            <div class="input-group">
+              {% if form.instance.video %}
+                <span 
+                  class="input-group-text text-truncate" 
+                  style="max-width: 150px;" 
+                  title="{{ form.instance.video.name }}"
+                >
+                  <small class="text-muted d-block mb-0">Actual:</small>
+                  <a href="{{ form.instance.video.url }}" 
+                     class="d-block text-truncate text-decoration-none">
+                    {{ form.instance.video.name }}
+                  </a>
+                </span>
+              {% endif %}
+          
+              <!-- input file “manual” -->
+              <input
+                type="file"
+                name="{{ form.video.name }}"
+                id="{{ form.video.id_for_label }}"
+                accept="video/*"
+                class="form-control"
+              />
+          
+              <button class="btn btn-outline-secondary" type="button">
+                <i class="bi bi-upload"></i>
+              </button>
+            </div>
+          
+            <div class="form-text text-muted mt-1">
+              {% if form.instance.video %}¿Cambiar video?{% else %}Sube tu video{% endif %} (MP4, MOV, AVI)
+            </div>
+          </div>
+          
+        </div>
+
+        <!-- Segunda fila del formulario -->
+        <div class="row g-3 mb-3">
+
+          <div class="col-md-6">
+            <div class="form-floating">
+              {{ form.galpon1 }}
+              {{ form.galpon1.label_tag }}
+              <div class="input-group-text position-absolute end-0 top-0 mt-2 me-2">
+                <i class="bi bi-house text-primary"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-floating">
+              {{ form.galpon2 }}
+              {{ form.galpon2.label_tag }}
+              <div class="input-group-text position-absolute end-0 top-0 mt-2 me-2">
+                <i class="bi bi-house-door text-primary"></i>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+
+        <!-- Tercera fila del formulario -->
+        <div class="row g-3 mb-3">
+          
+          <div class="col-md-4">
+            <div class="input-group">
+              <span class="input-group-text bg-light"><i class="bi bi-currency-dollar"></i></span>
+              {{ form.pactada }}
+              <span class="input-group-text">$</span>
+            </div>
+            <label for="{{ form.pactada.id_for_label }}" class="form-label">{{ form.pactada.label }}</label>
+          </div>
+          
+
+          <div class="col-md-4">
+            <div class="input-group">
+              <span class="input-group-text bg-light"><i class="bi bi-cash-coin"></i></span>
+              {{ form.pago_juez }}
+              <span class="input-group-text">$</span>
+            </div>
+            <label for="{{ form.pago_juez.id_for_label }}" class="form-label">{{ form.pago_juez.label }}</label>
+          </div>
+
+          <div class="col-md-4">
+            <div class="input-group">
+              <span class="input-group-text bg-light"><i class="bi bi-currency-dollar"></i></span>
+              {{ form.apuesta_general }}
+              <span class="input-group-text">$</span>
+            </div>
+            <label for="{{ form.apuesta_general.id_for_label }}" class="form-label">{{ form.apuesta_general.label }}</label>
+          </div>
+        </div>
+
+        <!-- Cuarta fila del formulario -->
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <div class="input-group">
+              <span class="input-group-text bg-light"><i class="bi bi-trophy"></i></span>
+              {{ form.premio_mayor }}
+              <span class="input-group-text">$</span>
+            </div>
+            <label for="{{ form.premio_mayor.id_for_label }}" class="form-label">Valor total del pollón</label>
+          </div>
+          <div class="col-md-4">
+            <div class="input-group">
+              <span class="input-group-text bg-light"><i class="bi bi-percent"></i></span>
+              {{ form.porcentaje_premio_mayor }}
+              <span class="input-group-text">%</span>
+            </div>
+            <label for="{{ form.porcentaje_premio_mayor.id_for_label }}" class="form-label">Porcentaje ganado del pollón</label>
+          </div>
+          <div class="col-md-4">
+            <div class="input-group">
+              <span class="input-group-text bg-light"><i class="bi bi-cash-stack"></i></span>
+              {{ form.apuesta_por_fuera }}
+              <span class="input-group-text">$</span>
+            </div>
+            <label for="{{ form.apuesta_por_fuera.id_for_label }}" class="form-label">{{ form.apuesta_por_fuera.label }}</label>
+          </div>
+        </div>
+
+        <!-- Quinta fila del formulario -->
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label for="{{ form.resultado.id_for_label }}" class="form-label">
+              <i class="bi bi-flag me-1"></i>{{ form.resultado.label }}
+            </label>
+            <div class="input-group">
+              <span class="input-group-text bg-light"><i class="bi bi-check2-circle"></i></span>
+              {{ form.resultado }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Selección de gallo -->
+        <div class="card mt-4 mb-4 border-primary">
+          <div class="card-header bg-light">
+            <h5 class="mb-0">
+              <i class="bi bi-award me-2"></i>Gallo Participante
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                data-bs-target="#modalParticipantes">
+                <i class="bi bi-search me-1"></i>Seleccionar Gallo
+              </button>
+
+              <div id="galloSeleccionado" class="ms-3">
+                {% if encuentro and encuentro.gallo %}
+                  <span class="badge bg-success p-2">
+                    <i class="bi bi-tag-fill me-1"></i>Placa {{ encuentro.gallo.nroPlaca }}
+                  </span>
+                {% else %}
+                  <span class="badge bg-secondary p-2">No seleccionado</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Campo oculto para el gallo -->
+            <input type="hidden" name="gallo" id="galloHidden" value="{{ encuentro.gallo.nroPlaca|default:'' }}">
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+          <a href="{% url 'listar_encuentros' %}" class="btn btn-outline-secondary me-2">
+            <i class="bi bi-arrow-left me-1"></i>Regresar al listado
+          </a>
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-save me-1"></i>Guardar Encuentro
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Selección de Gallo -->
+<div class="modal fade" id="modalParticipantes" tabindex="-1" aria-labelledby="modalParticipantesLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="modalParticipantesLabel">
+          <i class="bi bi-award me-2"></i>Seleccionar Gallo Participante
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-info">
+          <i class="bi bi-info-circle me-2"></i>Haga clic en una fila para seleccionar un gallo.
+        </div>
+        
+        <div class="mb-3">
+          <input type="text" class="form-control" id="buscarPlaca" placeholder="Buscar por placa...">
+        </div>
+
+        <div class="table-responsive modal-table-container" style="max-height: 400px; overflow-y: auto;">
+          <table class="table table-bordered table-hover" id="tablaGallos">
+            <thead class="table-light">
+              <tr>
+                <th><i class="bi bi-tag me-1"></i>Placa</th>
+                <th><i class="bi bi-palette me-1"></i>Color</th>
+                <th><i class="bi bi-gender-ambiguous me-1"></i>Sexo</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for gallo in gallos %}
+              <tr class="gallo-row" data-placa="{{ gallo.nroPlaca }}">
+                <td>{{ gallo.nroPlaca }}</td>
+                <td>{{ gallo.color }}</td>
+                <td>{{ gallo.sexo }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle me-1"></i>Cancelar
+        </button>
+        <button type="button" class="btn btn-primary" id="confirmarGallo" disabled>
+          <i class="bi bi-check-circle me-1"></i>Confirmar Selección
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  // Función de búsqueda
+document.getElementById('buscarPlaca').addEventListener('input', function(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  
+  document.querySelectorAll('#tablaGallos .gallo-row').forEach(row => {
+    const placa = row.querySelector('td:first-child').textContent.toLowerCase();
+    row.style.display = placa.includes(searchTerm) ? '' : 'none';
+  });
+
+  // Resetear selección al buscar
+  if (filaSeleccionada && filaSeleccionada.style.display === 'none') {
+    filaSeleccionada.classList.remove('table-primary');
+    galloSeleccionadoPlaca = null;
+    document.getElementById('confirmarGallo').disabled = true;
+  }
+});
+
+// Resetear búsqueda al abrir modal
+document.getElementById('modalParticipantes').addEventListener('show.bs.modal', function() {
+  document.getElementById('buscarPlaca').value = '';
+  document.querySelectorAll('#tablaGallos .gallo-row').forEach(row => row.style.display = '');
+  // Resto del código existente...
+});
+
+  let galloSeleccionadoPlaca = null;
+  let filaSeleccionada = null;
+
+  document.querySelectorAll('#tablaGallos .gallo-row').forEach(row => {
+    row.addEventListener('click', function() {
+      document.querySelectorAll('#tablaGallos .gallo-row').forEach(r => {
+        r.classList.remove('table-primary');
+      });
+      
+      this.classList.add('table-primary');
+      filaSeleccionada = this;
+      galloSeleccionadoPlaca = this.dataset.placa;
+      //console.log("Fila seleccionada - Placa:", galloSeleccionadoPlaca);
+      document.getElementById('confirmarGallo').disabled = false;
+    });
+  });
+
+  document.getElementById("confirmarGallo").addEventListener("click", function() {
+    const cont = document.getElementById("galloSeleccionado");
+    
+    if (galloSeleccionadoPlaca) {
+      cont.innerHTML = '';
+      
+      cont.innerHTML = `<span class="badge bg-success p-2"><i class="bi bi-tag-fill me-1"></i>Placa ${galloSeleccionadoPlaca}</span>`;
+
+      document.getElementById("galloHidden").value = galloSeleccionadoPlaca;
+      
+      //console.log("Gallo seleccionado y confirmado - Placa:", galloSeleccionadoPlaca);
+      
+      var modalEl = document.getElementById('modalParticipantes');
+      var modal = bootstrap.Modal.getInstance(modalEl);
+      modal.hide();
+    } else {
+      console.log("No se ha seleccionado ningún gallo");
+    }
+  });
+
+  document.getElementById('modalParticipantes').addEventListener('show.bs.modal', function() {
+    document.querySelectorAll('#tablaGallos .gallo-row').forEach(r => {
+      r.classList.remove('table-primary');
+    });
+    
+    document.getElementById('confirmarGallo').disabled = true;
+    
+    const galloPlaca = document.getElementById("galloHidden").value;
+    if (galloPlaca) {
+      const filaPrevia = document.querySelector(`#tablaGallos .gallo-row[data-placa="${galloPlaca}"]`);
+      if (filaPrevia) {
+        filaPrevia.classList.add('table-primary');
+        filaSeleccionada = filaPrevia;
+        galloSeleccionadoPlaca = galloPlaca;
+        document.getElementById('confirmarGallo').disabled = false;
+      }
+    }
+  });
+
+  document.getElementById("encuentroForm").addEventListener("submit", function(e) {
+    const galloPlaca = document.getElementById("galloHidden").value;
+    //console.log("Formulario enviado con gallo placa:", galloPlaca);
+    
+    if (!galloPlaca) {
+      e.preventDefault();
+      Swal.fire({
+        icon: 'warning',
+        title: 'Atención',
+        text: 'Debe seleccionar un gallo participante',
+        confirmButtonColor: '#0d6efd'
+      });
+    }
+  });
+
+  // Validación de formulario con Bootstrap
+  (function() {
+    'use strict';
+    
+    var forms = document.querySelectorAll('.needs-validation');
+    
+    Array.prototype.slice.call(forms).forEach(function(form) {
+      form.addEventListener('submit', function(event) {
+        if (!form.checkValidity() && document.getElementById("galloHidden").value) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+</script>
+
+{% endblock %}

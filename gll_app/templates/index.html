@@ -21,11 +21,11 @@
                 <i class="bi bi-search"></i>
               </button>
             </div>           
-            <a href="{% url 'crear' %}" class="btn btn-success">
+            <a href="{% url 'crear' %}" class="btn btn-primary">
               <i class="bi bi-plus-circle me-1"></i>Nuevo Gallo
             </a>
             <a href="{% url 'listar_encuentros' %}" class="btn btn-success ms-2">
-              <i class="bi bi-heart-arrow"></i>Ver encuentros
+              <i class="bi bi-trophy me-1"></i>Ver encuentros
             </a> 
           </div>
         </div>
@@ -34,7 +34,7 @@
   </div>
 
   <!-- Filtros y estadísticas -->
-  <div class="card shadow-sm mb-4 border-0">
+  <div class="card shadow-sm mb-4 mt-4 border-0">
     <div class="card-body pb-0">
       <div class="row g-3">
         <div class="col-sm-6 col-md-3">
@@ -43,7 +43,7 @@
               <i class="bi bi-list-check fs-3 me-3 text-primary"></i>
               <div>
                 <h6 class="card-title mb-0 text-primary">Total</h6>
-                <p class="card-text fs-4 fw-bold mb-0">{{ gallos|length }}</p>
+                <p class="card-text fs-4 fw-bold mb-0">{{ page_obj.paginator.count }}</p>
               </div>
             </div>
           </div>
@@ -75,8 +75,8 @@
             <div class="card-body d-flex align-items-center">
               <i class="bi bi-calendar-event fs-3 me-3 text-success"></i>
               <div>
-                <h6 class="card-title mb-0 text-success">Recientes</h6>
-                <p class="card-text fs-4 fw-bold mb-0">{{ gallos|slice:":5"|length }}</p>
+                <h6 class="card-title mb-0 text-success">Mostrando</h6>
+                <p class="card-text fs-4 fw-bold mb-0">{{ page_obj|length }}</p>
               </div>
             </div>
           </div>
@@ -155,7 +155,7 @@
                 </tr>
               </thead>
               <tbody>
-                {% for g in gallos %}
+                {% for g in page_obj %}
                 <tr class="fila-gallo" data-sexo="{{ g.sexo }}">
                   <td class="ps-3">
                     <span class="fw-bold">{{ g.nroPlaca }}</span>
@@ -199,12 +199,12 @@
       </div>
 
       <!-- Paginación -->
-      {% if gallos.has_other_pages %}
+      {% if page_obj.has_other_pages %}
       <nav aria-label="Page navigation" class="mt-4">
         <ul class="pagination justify-content-center">
-          {% if gallos.has_previous %}
+          {% if page_obj.has_previous %}
           <li class="page-item">
-            <a class="page-link" href="?page={{ gallos.previous_page_number }}" aria-label="Previous">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
               <span aria-hidden="true">&laquo;</span>
             </a>
           </li>
@@ -214,17 +214,17 @@
           </li>
           {% endif %}
           
-          {% for i in gallos.paginator.page_range %}
-            {% if gallos.number == i %}
+          {% for i in page_obj.paginator.page_range %}
+            {% if page_obj.number == i %}
             <li class="page-item active"><span class="page-link">{{ i }}</span></li>
             {% else %}
             <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
             {% endif %}
           {% endfor %}
           
-          {% if gallos.has_next %}
+          {% if page_obj.has_next %}
           <li class="page-item">
-            <a class="page-link" href="?page={{ gallos.next_page_number }}" aria-label="Next">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
               <span aria-hidden="true">&raquo;</span>
             </a>
           </li>
@@ -321,11 +321,10 @@
 </div>
 
 <script>
-  // Confirmar eliminación con SweetAlert
   function confirmarEliminacion(nroPlaca) {
     Swal.fire({
         title: '¿Estás seguro?',
-        text: "No se podrá reguperar el registro",
+        text: "No se podrá recuperar el registro",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
@@ -339,9 +338,7 @@
     });
   }
 
-  // Cuando el documento está listo
   document.addEventListener('DOMContentLoaded', function() {
-    // Filtrado de tabla
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
       searchInput.addEventListener('keyup', function() {
@@ -349,14 +346,13 @@
         const table = document.getElementById('tablaGallos');
         const rows = table.getElementsByTagName('tr');
 
-        for (let i = 1; i < rows.length; i++) { // Empezar en 1 para saltar el encabezado
+        for (let i = 1; i < rows.length; i++) {
           let found = false;
           const cells = rows[i].getElementsByTagName('td');
           
-          if (cells.length === 0) continue; // Saltar si no hay celdas (ej. mensaje vacío)
-          
-          // Buscar en todas las celdas de la fila
-          for (let j = 0; j < cells.length - 1; j++) { // -1 para saltar la columna de acciones
+          if (cells.length === 0) continue;
+        
+          for (let j = 0; j < cells.length - 1; j++) {
             const cellText = cells[j].textContent.toLowerCase();
             if (cellText.indexOf(searchText) > -1) {
               found = true;
@@ -373,12 +369,10 @@
       });
     }
     
-    // Contar y mostrar machos y hembras
     let contadorMachos = 0;
     let contadorHembras = 0;
     const filas = document.querySelectorAll('.fila-gallo');
     
-    // Crear colecciones para las pestañas
     let contenidoMachos = '';
     let contenidoHembras = '';
     
@@ -415,11 +409,9 @@
       }
     });
     
-    // Actualizar contadores
     document.getElementById('contador-machos').textContent = contadorMachos;
     document.getElementById('contador-hembras').textContent = contadorHembras;
     
-    // Rellenar las tablas de machos y hembras
     const tbodyMachos = document.getElementById('tbody-machos');
     const tbodyHembras = document.getElementById('tbody-hembras');
     

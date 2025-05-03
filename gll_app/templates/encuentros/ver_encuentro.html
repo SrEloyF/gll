@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4">
+
+  <div class="row mt-3">
+    <div class="col-md-8">
+      <!-- Información del Encuentro -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header {% if encuentro.resultado == 'V' %}bg-success text-white{% elif encuentro.resultado == 'T' %}bg-warning{% else %}bg-danger text-white{% endif %}">
+          <div class="d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">
+              {% if encuentro.resultado == 'V' %}
+                <i class="bi bi-trophy me-2"></i>
+              {% elif encuentro.resultado == 'T' %}
+                <i class="bi bi-dash-circle-fill"></i>
+              {% else %}
+                <i class="bi bi-x-circle me-2"></i>
+              {% endif %}
+              Detalle del Encuentro #{{ encuentro.idEncuentro }}
+            </h3>
+            <span class="badge {% if encuentro.resultado == 'V' %}bg-success-subtle text-success border border-success{% elif encuentro.resultado == 'T' %}bg-warning-subtle text-warning border border-warning{% else %}bg-danger-subtle text-danger border border-danger{% endif %} fs-6 py-2 px-3">
+              {{ encuentro.get_resultado_display }}
+            </span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h5 class="border-bottom pb-2 mb-3"><i class="bi bi-info-circle me-2"></i>Información General</h5>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                  <div><i class="bi bi-calendar-date me-2 text-primary"></i><strong>Fecha y hora:</strong></div>
+                  <span class="badge bg-light text-dark p-2">{{ encuentro.fechaYHora|date:"d/m/Y H:i" }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                  <div><i class="bi bi-house me-2 text-primary"></i><strong>Galpón 1:</strong></div>
+                  <span>{{ encuentro.galpon1 }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                  <div><i class="bi bi-house-door me-2 text-primary"></i><strong>Galpón 2:</strong></div>
+                  <span>{{ encuentro.galpon2 }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                  <div><i class="bi bi-award me-2 text-primary"></i><strong>Gallo:</strong></div>
+                  <span class="badge bg-primary p-2">{{ encuentro.gallo }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                  <div><i class="bi bi-flag me-2 text-primary"></i><strong>Resultado:</strong></div>
+                  <span class="badge {% if encuentro.resultado == 'V' %}bg-success{% elif encuentro.resultado == 'T' %}bg-warning text-dark{% else %}bg-danger{% endif %} p-2">
+                    {{ encuentro.get_resultado_display }}
+                  </span>
+                </li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h5 class="border-bottom pb-2 mb-3"><i class="bi bi-camera-video me-2"></i>Video del Encuentro</h5>
+              {% if encuentro.video %}
+                <div class="ratio ratio-16x9 mb-2">
+                  <video controls class="rounded shadow-sm">
+                    <source src="{{ encuentro.video.url }}" type="video/mp4">
+                    Su navegador no soporta la reproducción de video.
+                  </video>
+                </div>
+                <a href="{{ encuentro.video.url }}" download class="btn btn-sm btn-outline-primary">
+                  <i class="bi bi-download me-1"></i>Descargar video
+                </a>
+              {% else %}
+                <div class="alert alert-secondary">
+                  <i class="bi bi-camera-video-off me-2"></i>Video no disponible
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen Financiero -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0"><i class="bi bi-cash-coin me-2"></i>Resumen Financiero</h3>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table mb-0">
+              <thead>
+                <tr class="table-light">
+                  <th colspan="4">Resumen de Transacciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="table-info">
+                  <td colspan="4" class="fw-bold"><i class="bi bi-graph-up-arrow me-2"></i>INGRESOS</td>
+                </tr>
+                <tr>
+                  <td><i class="bi bi-cash me-2 text-success"></i>Apuesta general</td>
+                  <td class="text-end">{{ encuentro.apuesta_general }}</td>
+                  <td><i class="bi bi-cash-stack me-2 text-success"></i>Apuesta por fuera</td>
+                  <td class="text-end">{{ encuentro.apuesta_por_fuera }}</td>
+                </tr>
+                <tr class="table-light">
+                  <td colspan="3" class="fw-bold">Total dinero invertido</td>
+                  <td class="text-end fw-bold">{{ todo_el_dinero_apostado }}</td>
+                </tr>
+                <tr class="table-secondary">
+                  <td colspan="4" class="small fst-italic">
+                    <i class="bi bi-calculator me-1"></i>Cálculo: {{ encuentro.apuesta_general }} + {{ encuentro.apuesta_por_fuera }} = {{ todo_el_dinero_apostado }}
+                  </td>
+                </tr>
+                
+                {% if encuentro.premio_mayor > 0 and encuentro.porcentaje_premio_mayor > 0 %}
+                <tr class="table-success">
+                  <td colspan="4" class="fw-bold"><i class="bi bi-star-fill me-2 text-warning"></i>POLLÓN</td>
+                </tr>
+                <tr>
+                  <td><i class="bi bi-trophy-fill me-2 text-warning"></i>Pollón</td>
+                  <td class="text-end">{{ encuentro.premio_mayor }}</td>
+                  <td><i class="bi bi-percent me-2"></i>Porcentaje</td>
+                  <td class="text-end">{{ encuentro.porcentaje_premio_mayor }}%</td>
+                </tr>
+                <tr class="table-light">
+                  <td colspan="3" class="fw-bold">Dinero correspondiente del pollón</td>
+                  <td class="text-end fw-bold">{{ dinero_del_premio_mayor }}</td>
+                </tr>
+                <tr class="table-secondary">
+                  <td colspan="4" class="small fst-italic">
+                    <i class="bi bi-calculator me-1"></i>Cálculo: {{ encuentro.premio_mayor }} × ({{ encuentro.porcentaje_premio_mayor }}%) = {{ dinero_del_premio_mayor }}
+                  </td>
+                </tr>
+                {% endif %}
+                
+                <tr class="{% if encuentro.resultado == 'V' %}table-success{% elif encuentro.resultado == 'T' %}table-warning{% else %}table-danger{% endif %}">
+                  <td colspan="3" class="fw-bold">
+                    <i class="bi bi-currency-dollar me-2"></i>Dinero final ({{ encuentro.get_resultado_display }})
+                  </td>
+                  <td class="text-end fw-bold">{{ dinero_luego_de_la_apuesta }}</td>
+                </tr>
+                <tr class="table-secondary">
+                  <td colspan="4" class="small fst-italic">
+                    <i class="bi bi-calculator me-1"></i>Cálculo: 
+                    {% if encuentro.resultado == 'V' %}
+                      Victoria: {{ todo_el_dinero_apostado }} × 2 = {{ dinero_luego_de_la_apuesta }}
+                    {% elif encuentro.resultado == 'T' %}
+                      Tablas: {{ todo_el_dinero_apostado }} × 1 = {{ dinero_luego_de_la_apuesta }}
+                    {% else %}
+                      Derrota: {{ todo_el_dinero_apostado }} × 0 = {{ dinero_luego_de_la_apuesta }}
+                    {% endif %}
+                    {% if encuentro.premio_mayor > 0 and encuentro.porcentaje_premio_mayor > 0 %}
+                      + {{ dinero_del_premio_mayor }} (Pollón)
+                    {% endif %}
+                  </td>
+                </tr>
+                
+                <tr class="table-danger">
+                  <td colspan="4" class="fw-bold"><i class="bi bi-graph-down-arrow me-2"></i>GASTOS</td>
+                </tr>
+                <tr>
+                  <td><i class="bi bi-clipboard-check me-2 text-danger"></i>Pactada</td>
+                  <td class="text-end">{{ encuentro.pactada }}</td>
+                  <td><i class="bi bi-person-badge me-2 text-danger"></i>Pago del Juez</td>
+                  <td class="text-end">{{ encuentro.pago_juez }}</td>
+                </tr>
+                <tr>
+                  <td colspan="3"><i class="bi bi-person-check me-2 text-danger"></i>Pago careador (15% de {{ dinero_luego_de_la_apuesta }})</td>
+                  <td class="text-end">{{ pago_careador }}</td>
+                </tr>
+                <tr class="table-light">
+                  <td colspan="3" class="fw-bold">Total de gastos</td>
+                  <td class="text-end fw-bold">{{ gastos }}</td>
+                </tr>
+                <tr class="table-secondary">
+                  <td colspan="4" class="small fst-italic">
+                    <i class="bi bi-calculator me-1"></i>Cálculo: {{ encuentro.pactada }} + {{ encuentro.pago_juez }} + {{ pago_careador }} (15% de {{ dinero_luego_de_la_apuesta }}) = {{ gastos }}
+                  </td>
+                </tr>
+                
+                <tr class="table-{% if dinero_final > 0 %}success{% else %}danger{% endif %}">
+                  <td colspan="3" class="fw-bold fs-5">
+                    <i class="bi bi-{% if dinero_final > 0 %}arrow-up-circle-fill text-success{% else %}arrow-down-circle-fill text-danger{% endif %} me-2"></i>
+                    RESULTADO FINAL ({{ encuentro.get_resultado_display }})
+                  </td>
+                  <td class="text-end fw-bold fs-5">{{ dinero_final }}</td>
+                </tr>
+                <tr class="table-secondary">
+                  <td colspan="4" class="small fst-italic">
+                    <i class="bi bi-calculator me-1"></i>Cálculo: {{ dinero_luego_de_la_apuesta }} - {{ gastos }} = {{ dinero_final }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <!-- Panel de Resultado -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header {% if encuentro.resultado == 'V' %}bg-success text-white{% elif encuentro.resultado == 'T' %}bg-warning{% else %}bg-danger text-white{% endif %}">
+          <h4 class="mb-0">
+            {% if encuentro.resultado == 'V' %}
+              <i class="bi bi-trophy me-2"></i>Victoria
+            {% elif encuentro.resultado == 'T' %}
+              <i class="bi bi-dash-circle-fill"></i>Tablas
+            {% else %}
+              <i class="bi bi-x-circle me-2"></i>Derrota
+            {% endif %}
+          </h4>
+        </div>
+        <div class="card-body">
+          <div class="text-center mb-4">
+            <div class="display-1 mb-3">
+              {% if encuentro.resultado == 'V' %}
+                <i class="bi bi-trophy text-success"></i>
+              {% elif encuentro.resultado == 'T' %}
+                <i class="bi bi-dash-circle-fill text-warning"></i>
+              {% else %}
+                <i class="bi bi-x-circle text-danger"></i>
+              {% endif %}
+            </div>
+            <h3 class="mb-0">{{ encuentro.get_resultado_display }}</h3>
+          </div>
+          
+          <div class="mb-4">
+            <h5 class="border-bottom pb-2 mb-3"><i class="bi bi-info-circle me-2"></i>Información Rápida</h5>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span>Dinero ganado/perdido:</span>
+              <span class="badge {% if dinero_final > 0 %}bg-success{% else %}bg-danger{% endif %} p-2">
+                {{ dinero_final }}
+              </span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span>Dinero invertido:</span>
+              <span class="badge bg-primary p-2">{{ todo_el_dinero_apostado }}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span>Gastos totales:</span>
+              <span class="badge bg-danger p-2">{{ gastos }}</span>
+            </div>
+            
+            <div class="card mt-3 border-info">
+              <div class="card-header bg-info text-white py-1">
+                <h6 class="mb-0"><i class="bi bi-info-circle me-1"></i>Fórmula de cálculo</h6>
+              </div>
+              <div class="card-body p-2">
+                <small class="d-block mb-1">
+                  <strong>1.</strong> Dinero apostado = Apuesta general + Apuesta por fuera
+                </small>
+                <small class="d-block mb-1">
+                  <strong>2.</strong> 
+                  {% if encuentro.resultado == 'V' %}
+                    En caso de Victoria: Dinero final = Dinero apostado × 2
+                  {% elif encuentro.resultado == 'T' %}
+                    En caso de Tablas: Dinero final = Dinero apostado × 1
+                  {% else %}
+                    En caso de Derrota: Dinero final = Dinero apostado × 0
+                  {% endif %}
+                </small>
+                {% if encuentro.premio_mayor > 0 and encuentro.porcentaje_premio_mayor > 0 %}
+                <small class="d-block mb-1">
+                  <strong>3.</strong> Pollón = Valor pollón × Porcentaje
+                </small>
+                {% endif %}
+                <small class="d-block mb-1">
+                  <strong>{% if encuentro.premio_mayor > 0 and encuentro.porcentaje_premio_mayor > 0 %}4{% else %}3{% endif %}.</strong> Pago careador = 15% del Dinero final
+                </small>
+                <small class="d-block">
+                  <strong>{% if encuentro.premio_mayor > 0 and encuentro.porcentaje_premio_mayor > 0 %}5{% else %}4{% endif %}.</strong> Resultado final = Dinero final - (Pactada + Pago juez + Pago careador)
+                </small>
+              </div>
+            </div>
+          </div>
+                    
+          <div class="d-grid gap-2">
+            <a href="{% url 'editar_encuentro' encuentro.idEncuentro %}" class="btn btn-warning">
+              <i class="bi bi-pencil-square me-2"></i>Editar Encuentro
+            </a>
+            <a href="{% url 'listar_encuentros' %}" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left me-2"></i>Regresar al Listado
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Gallo Participante -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0"><i class="bi bi-award me-2"></i>Gallo Participante</h4>
+        </div>
+        <div class="card-body text-center">
+          <div class="display-1 mb-3 text-primary">
+            <i class="bi bi-award"></i>
+          </div>
+          <h3 class="mb-3">{{ encuentro.gallo }}</h3>
+          <div class="d-grid">
+            <a href="{% url 'ver' encuentro.gallo.nroPlaca %}" class="btn btn-outline-primary">
+              <i class="bi bi-info-circle me-2"></i>Ver Detalles del Gallo
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

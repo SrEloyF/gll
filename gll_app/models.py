@@ -1,6 +1,7 @@
 from django.db import models
 import time
 import os
+from django.core.validators import MinValueValidator
 
 def imagen_upload_path(instance, filename):
     ext = filename.split('.')[-1]
@@ -38,22 +39,20 @@ class Encuentro(models.Model):
     fechaYHora = models.DateTimeField(null=False)
     galpon1 = models.CharField(max_length=100)
     galpon2 = models.CharField(max_length=100)
-    ganador = models.ForeignKey(Gallo, on_delete=models.PROTECT, null=True)  # null si es empate
+    gallo = models.ForeignKey(Gallo, on_delete=models.PROTECT)
+    resultado = models.CharField(max_length=20, choices=[
+        ('V', 'Victoria'),
+        ('T', 'Tablas'),
+        ('D', 'Derrota')
+    ])
     video = models.FileField(upload_to=imagen_upload_path, null=True)
 
     # gastos fijos
-    pactada = models.DecimalField(decimal_places=2, max_digits=10)
-    pago_juez = models.DecimalField(decimal_places=2, max_digits=10)
+    pactada = models.DecimalField(decimal_places=2, default=0, max_digits=10, validators=[MinValueValidator(0)])
+    pago_juez = models.DecimalField(decimal_places=2, default=0, max_digits=10, validators=[MinValueValidator(0)])
 
     # ganancias
-    apuesta_general = models.DecimalField(decimal_places=2, max_digits=10)
-    premio_mayor = models.DecimalField(decimal_places=2, default=0, max_digits=10)
-    porcentaje_premio_mayor = models.DecimalField(decimal_places=2, default=0, max_digits=5)
-    apuesta_por_fuera = models.DecimalField(decimal_places=3, default=0, max_digits=10)
-
-class ParticipantesEnEncuentro(models.Model):
-    idEncuentro = models.ForeignKey(Encuentro, on_delete=models.PROTECT)
-    idParticipante = models.ForeignKey(Gallo, on_delete=models.PROTECT)
-
-    class Meta:
-        unique_together = ('idEncuentro', 'idParticipante')
+    apuesta_general = models.DecimalField(decimal_places=2, max_digits=10, validators=[MinValueValidator(0)])
+    premio_mayor = models.DecimalField(decimal_places=2, default=0, max_digits=10, validators=[MinValueValidator(0)])
+    porcentaje_premio_mayor = models.DecimalField(decimal_places=2, default=0, max_digits=5, validators=[MinValueValidator(0)])
+    apuesta_por_fuera = models.DecimalField(decimal_places=2, default=0, max_digits=10, validators=[MinValueValidator(0)])
