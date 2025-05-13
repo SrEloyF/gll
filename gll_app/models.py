@@ -13,16 +13,44 @@ def imagen_upload_path_encuentros(instance, filename):
     timestamp = int(time.time())
     return f"media/videos/encuentros/{timestamp}_{base}{ext}"
 
+class Color(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+    def __str__(self):
+        return self.nombre
+    
+class Estado(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+    def __str__(self):
+        return self.nombre
+    
+class Galpon(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+    def __str__(self):
+        return self.nombre
+
+class Dueno(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+    def __str__(self):
+        return self.nombre
+
 class Gallo(models.Model):
-    nroPlaca = models.IntegerField(primary_key=True, unique=True)
+    idGallo = models.AutoField(primary_key=True)
+    nroPlaca = models.IntegerField(unique=True, null=True, blank=True)
     fechaNac = models.DateField()
-    color = models.CharField(max_length=100)
+    color = models.ForeignKey(Color, on_delete=models.PROTECT)
     sexo = models.CharField(max_length=1, choices=[('M', 'Macho'), ('H', 'Hembra')])
     tipoGallo = models.CharField(max_length=20, choices=[
         ('DP', 'Gallo De Pelea'),
         ('PADRE', 'Gallo Padre'),
         ('MADRE', 'Gallina madre')
     ])
+
+    peso = models.DecimalField(decimal_places=2, default=0, max_digits=10, validators=[MinValueValidator(0)])
+    nroPlacaAnterior = models.IntegerField(null=True, blank=True)
+    nombreDuenoAnterior = models.CharField(max_length=100, null=True, blank=True)
+    estadoDeSalud = models.ForeignKey(Estado, on_delete=models.PROTECT)
+    fechaMuerte = models.DateField(null=True, blank=True)
+
     observaciones = models.TextField()
     nombre_img = models.ImageField(upload_to=imagen_upload_path)
     placaPadre = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='hijos_padre')
@@ -31,14 +59,11 @@ class Gallo(models.Model):
     def __str__(self):
         return f"Gallo {self.nroPlaca}"
 
-#migrar
-#mostrar el 15% para el careador en el frontend
-
 class Encuentro(models.Model):
     idEncuentro = models.AutoField(primary_key=True)
     fechaYHora = models.DateTimeField(null=False)
-    galpon1 = models.CharField(max_length=100)
-    galpon2 = models.CharField(max_length=100)
+    galpon1 = models.ForeignKey(Galpon, on_delete=models.PROTECT, related_name='galpon1')
+    galpon2 = models.ForeignKey(Galpon, on_delete=models.PROTECT, related_name='galpon2')
     gallo = models.ForeignKey(Gallo, on_delete=models.PROTECT)
     resultado = models.CharField(max_length=20, choices=[
         ('V', 'Victoria'),
@@ -46,6 +71,9 @@ class Encuentro(models.Model):
         ('D', 'Derrota')
     ])
     video = models.FileField(upload_to=imagen_upload_path, null=True)
+    condicionGallo = models.CharField(max_length=100, null=True)
+    duenoEvento = models.ForeignKey(Dueno, on_delete=models.PROTECT)
+    imagen_evento = models.ImageField(upload_to=imagen_upload_path_encuentros, null=True)
 
     # gastos fijos
     pactada = models.DecimalField(decimal_places=2, default=0, max_digits=10, validators=[MinValueValidator(0)])

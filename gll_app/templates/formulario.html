@@ -10,13 +10,13 @@
     <div class="card-body">
       <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
         {% csrf_token %}
-        
+
         {% if form.non_field_errors %}
-          <div class="alert alert-danger">
-            {{ form.non_field_errors }}
-          </div>
+        <div class="alert alert-danger">
+          {{ form.non_field_errors }}
+        </div>
         {% endif %}
-        
+
         <div class="row g-3">
           <!-- Datos básicos -->
           <div class="col-md-6">
@@ -24,61 +24,111 @@
               {{ form.nroPlaca }}
               <label for="{{ form.nroPlaca.id_for_label }}">Número de Placa</label>
               {% if form.nroPlaca.errors %}
-                <div class="invalid-feedback d-block">{{ form.nroPlaca.errors }}</div>
+              <div class="invalid-feedback d-block">{{ form.nroPlaca.errors }}</div>
               {% endif %}
             </div>
           </div>
-          
+
           <div class="col-md-6">
             <div class="form-floating mb-3">
               {{ form.fechaNac }}
               <label for="{{ form.fechaNac.id_for_label }}">Fecha de Nacimiento</label>
               {% if form.fechaNac.errors %}
-                <div class="invalid-feedback d-block">{{ form.fechaNac.errors }}</div>
+              <div class="invalid-feedback d-block">{{ form.fechaNac.errors }}</div>
               {% endif %}
             </div>
           </div>
-          
+
           <div class="col-md-4">
             <div class="form-floating mb-3">
               {{ form.color }}
               <label for="{{ form.color.id_for_label }}">Color</label>
               {% if form.color.errors %}
-                <div class="invalid-feedback d-block">{{ form.color.errors }}</div>
+              <div class="invalid-feedback d-block">{{ form.color.errors }}</div>
               {% endif %}
             </div>
           </div>
-          
+
           <div class="col-md-4">
             <div class="form-floating mb-3">
               {{ form.sexo }}
               <label for="{{ form.sexo.id_for_label }}">Sexo</label>
               {% if form.sexo.errors %}
-                <div class="invalid-feedback d-block">{{ form.sexo.errors }}</div>
+              <div class="invalid-feedback d-block">{{ form.sexo.errors }}</div>
               {% endif %}
             </div>
           </div>
-          
+
           <div class="col-md-4">
             <div class="form-floating mb-3">
               {{ form.tipoGallo }}
               <label for="{{ form.tipoGallo.id_for_label }}">Tipo de Gallo</label>
               {% if form.tipoGallo.errors %}
-                <div class="invalid-feedback d-block">{{ form.tipoGallo.errors }}</div>
+              <div class="invalid-feedback d-block">{{ form.tipoGallo.errors }}</div>
               {% endif %}
             </div>
           </div>
-          
+
+          <div class="col-md-6">
+            <div class="form-floating mb-3">
+              {{ form.peso }}
+              <label for="{{ form.peso.id_for_label }}">Peso (kg)</label>
+              {% if form.peso.errors %}
+              <div class="invalid-feedback d-block">{{ form.peso.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-floating mb-3">
+              {{ form.nroPlacaAnterior }}
+              <label for="{{ form.nroPlacaAnterior.id_for_label }}">Número de Placa Anterior</label>
+              {% if form.nroPlacaAnterior.errors %}
+              <div class="invalid-feedback d-block">{{ form.nroPlacaAnterior.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-floating mb-3">
+              {{ form.nombreDuenoAnterior }}
+              <label for="{{ form.nombreDuenoAnterior.id_for_label }}">Nombre del Dueño Anterior</label>
+              {% if form.nombreDuenoAnterior.errors %}
+              <div class="invalid-feedback d-block">{{ form.nombreDuenoAnterior.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-floating mb-3">
+              {{ form.estadoDeSalud }}
+              <label for="{{ form.estadoDeSalud.id_for_label }}">Estado de Salud</label>
+              {% if form.estadoDeSalud.errors %}
+              <div class="invalid-feedback d-block">{{ form.estadoDeSalud.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-floating mb-3">
+              {{ form.fechaMuerte }}
+              <label for="{{ form.fechaMuerte.id_for_label }}">Fecha de Muerte</label>
+              {% if form.fechaMuerte.errors %}
+              <div class="invalid-feedback d-block">{{ form.fechaMuerte.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+
           <div class="col-12">
             <div class="form-floating mb-3">
               {{ form.observaciones }}
               <label for="{{ form.observaciones.id_for_label }}">Observaciones</label>
               {% if form.observaciones.errors %}
-                <div class="invalid-feedback d-block">{{ form.observaciones.errors }}</div>
+              <div class="invalid-feedback d-block">{{ form.observaciones.errors }}</div>
               {% endif %}
             </div>
           </div>
-          
+
           <div class="col-12 mb-3">
             <label for="{{ form.nombre_img.id_for_label }}" class="form-label">Fotografía</label>
             <div class="input-group">
@@ -86,7 +136,7 @@
               {{ form.nombre_img }}
             </div>
             {% if form.nombre_img.errors %}
-              <div class="invalid-feedback d-block">{{ form.nombre_img.errors }}</div>
+            <div class="invalid-feedback d-block">{{ form.nombre_img.errors }}</div>
             {% endif %}
             <div class="form-text">Seleccione una imagen del ave para su registro.</div>
           </div>
@@ -102,26 +152,45 @@
               <div class="col-md-6 mb-3">
                 <label class="form-label fw-bold">Padre</label>
                 <div class="d-flex align-items-center">
-                  <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalPadre">
+                  <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                    data-bs-target="#modalPadre">
                     <i class="bi bi-search me-1"></i> Seleccionar Padre
                   </button>
                   <input type="hidden" id="inputPadre" name="placaPadre" value="{{ padre_sel|default_if_none:'' }}">
                   <span id="padreSeleccionado" class="badge bg-success ms-2 {% if not padre_sel %}d-none{% endif %}">
                     {% if padre_sel %}Placa: {{ padre_sel }}{% endif %}
                   </span>
+                  {% if padre_sel %}
+                  <button type="button" class="btn btn-danger btn-sm ms-2" id="quitarPadre">
+                    <i class="bi bi-x-circle me-1"></i> Quitar
+                  </button>
+                  {% else %}
+                  <button type="button" class="btn btn-danger btn-sm ms-2 d-none" id="quitarPadre">
+                    <i class="bi bi-x-circle me-1"></i> Quitar
+                  </button>
+                  {% endif %}
                 </div>
               </div>
-              
               <div class="col-md-6 mb-3">
                 <label class="form-label fw-bold">Madre</label>
                 <div class="d-flex align-items-center">
-                  <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalMadre">
+                  <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                    data-bs-target="#modalMadre">
                     <i class="bi bi-search me-1"></i> Seleccionar Madre
                   </button>
                   <input type="hidden" id="inputMadre" name="placaMadre" value="{{ madre_sel|default_if_none:'' }}">
                   <span id="madreSeleccionada" class="badge bg-success ms-2 {% if not madre_sel %}d-none{% endif %}">
                     {% if madre_sel %}Placa: {{ madre_sel }}{% endif %}
                   </span>
+                  {% if madre_sel %}
+                  <button type="button" class="btn btn-danger btn-sm ms-2" id="quitarMadre">
+                    <i class="bi bi-x-circle me-1"></i> Quitar
+                  </button>
+                  {% else %}
+                  <button type="button" class="btn btn-danger btn-sm ms-2 d-none" id="quitarMadre">
+                    <i class="bi bi-x-circle me-1"></i> Quitar
+                  </button>
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -130,11 +199,19 @@
 
         <div class="d-flex justify-content-between mt-4">
           <a href="{% url 'index' %}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Volver
+            <i class="bi bi-arrow-left"></i> Volver al listado de gallos
           </a>
-          <button type="submit" class="btn btn-success px-4">
-            <i class="bi bi-save"></i> Guardar Registro
-          </button>
+          <div>
+            <a href="{% url 'estado_create' %}" class="btn btn-danger px-4 me-2">
+              <i class="bi bi-clipboard2-plus me-1"></i>Registrar estados
+            </a>
+            <a href="{% url 'color_create' %}" class="btn btn-warning px-4 me-2">
+              <i class="bi bi-palette me-1"></i>Registrar colores
+            </a>
+            <button type="submit" class="btn btn-success px-4">
+              <i class="bi bi-save me-1"></i> Guardar Registro
+            </button>
+          </div>
         </div>
       </form>
     </div>
@@ -161,26 +238,24 @@
             </thead>
             <tbody>
               {% for g in gallos %}
-                {% if g.sexo == 'M' %}
-                <tr>
-                  <td><span class="fw-bold">{{ g.nroPlaca }}</span></td>
-                  <td>{{ g.color }}</td>
-                  <td class="text-end">
-                    <button type="button"
-                            class="btn btn-sm btn-success seleccionar-padre"
-                            data-placa="{{ g.nroPlaca }}"
-                            data-bs-dismiss="modal">
-                      <i class="bi bi-check-circle me-1"></i> Seleccionar
-                    </button>
-                  </td>
-                </tr>
-                {% endif %}
+              {% if g.sexo == 'M' %}
+              <tr>
+                <td><span class="fw-bold">{{ g.nroPlaca }}</span></td>
+                <td>{{ g.color }}</td>
+                <td class="text-end">
+                  <button type="button" class="btn btn-sm btn-success seleccionar-padre" data-placa="{{ g.nroPlaca }}"
+                    data-idgallo="{{ g.idGallo }}" data-bs-dismiss="modal">
+                    <i class="bi bi-check-circle me-1"></i> Seleccionar
+                  </button>
+                </td>
+              </tr>
+              {% endif %}
               {% empty %}
-                <tr>
-                  <td colspan="3" class="text-center py-3 text-muted">
-                    <i class="bi bi-exclamation-circle me-2"></i>No hay gallos macho disponibles.
-                  </td>
-                </tr>
+              <tr>
+                <td colspan="3" class="text-center py-3 text-muted">
+                  <i class="bi bi-exclamation-circle me-2"></i>No hay gallos macho disponibles.
+                </td>
+              </tr>
               {% endfor %}
             </tbody>
           </table>
@@ -213,26 +288,24 @@
             </thead>
             <tbody>
               {% for g in gallos %}
-                {% if g.sexo == 'H' %}
-                <tr>
-                  <td><span class="fw-bold">{{ g.nroPlaca }}</span></td>
-                  <td>{{ g.color }}</td>
-                  <td class="text-end">
-                    <button type="button"
-                            class="btn btn-sm btn-danger seleccionar-madre"
-                            data-placa="{{ g.nroPlaca }}"
-                            data-bs-dismiss="modal">
-                      <i class="bi bi-check-circle me-1"></i> Seleccionar
-                    </button>
-                  </td>
-                </tr>
-                {% endif %}
+              {% if g.sexo == 'H' %}
+              <tr>
+                <td><span class="fw-bold">{{ g.nroPlaca }}</span></td>
+                <td>{{ g.color }}</td>
+                <td class="text-end">
+                  <button type="button" class="btn btn-sm btn-danger seleccionar-madre" data-placa="{{ g.nroPlaca }}"
+                    data-idgallo="{{ g.idGallo }}" data-bs-dismiss="modal">
+                    <i class="bi bi-check-circle me-1"></i> Seleccionar
+                  </button>
+                </td>
+              </tr>
+              {% endif %}
               {% empty %}
-                <tr>
-                  <td colspan="3" class="text-center py-3 text-muted">
-                    <i class="bi bi-exclamation-circle me-2"></i>No hay gallinas disponibles.
-                  </td>
-                </tr>
+              <tr>
+                <td colspan="3" class="text-center py-3 text-muted">
+                  <i class="bi bi-exclamation-circle me-2"></i>No hay gallinas disponibles.
+                </td>
+              </tr>
               {% endfor %}
             </tbody>
           </table>
@@ -261,14 +334,35 @@
     });
   })();
 
+  // Quitar Padre
+  document.getElementById('quitarPadre')?.addEventListener('click', () => {
+    document.getElementById('inputPadre').value = '';
+    const badge = document.getElementById('padreSeleccionado');
+    const botonEliminarPadre = document.getElementById('quitarPadre');
+    botonEliminarPadre.classList.add('d-none');
+    badge.classList.add('d-none');
+  });
+
+  // Quitar Madre
+  document.getElementById('quitarMadre')?.addEventListener('click', () => {
+    document.getElementById('inputMadre').value = '';
+    const badge = document.getElementById('madreSeleccionada');
+    const botonEliminarMadre = document.getElementById('quitarMadre');
+    botonEliminarMadre.classList.add('d-none');
+    badge.classList.add('d-none');
+  });
+
   // Selección de padre
   document.querySelectorAll('.seleccionar-padre').forEach(btn => {
     btn.onclick = () => {
       const placa = btn.dataset.placa;
-      document.getElementById('inputPadre').value = placa;
+      const idGallo = btn.dataset.idgallo;
+      document.getElementById('inputPadre').value = idGallo;
       const badge = document.getElementById('padreSeleccionado');
       badge.textContent = `Placa: ${placa}`;
       badge.classList.remove('d-none');
+      const botonEliminarPadre = document.getElementById('quitarPadre');
+      botonEliminarPadre.classList.remove('d-none');
     };
   });
 
@@ -276,10 +370,13 @@
   document.querySelectorAll('.seleccionar-madre').forEach(btn => {
     btn.onclick = () => {
       const placa = btn.dataset.placa;
-      document.getElementById('inputMadre').value = placa;
+      const idGallo = btn.dataset.idgallo;
+      document.getElementById('inputMadre').value = idGallo;
       const badge = document.getElementById('madreSeleccionada');
       badge.textContent = `Placa: ${placa}`;
       badge.classList.remove('d-none');
+      const botonEliminarMadre = document.getElementById('quitarMadre');
+      botonEliminarMadre.classList.remove('d-none');
     };
   });
 

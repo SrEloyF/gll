@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+
+{% block title %}Registrar Encuentro{% endblock %}
+
 {% block content %}
 <div class="container py-4">
   <div class="card shadow-sm">
@@ -9,7 +12,8 @@
     </div>
     <div class="card-body">
       <form method="post" enctype="multipart/form-data" id="encuentroForm"
-        action="{% if encuentro %}{% url 'editar_encuentro' encuentro.idEncuentro %}{% else %}{% url 'crear_encuentro' %}{% endif %}" class="needs-validation" novalidate>
+        action="{% if encuentro %}{% url 'editar_encuentro' encuentro.idEncuentro %}{% else %}{% url 'crear_encuentro' %}{% endif %}"
+        class="needs-validation" novalidate>
 
         {% csrf_token %}
 
@@ -17,7 +21,7 @@
         <div class="row g-3 mb-3">
           <div class="col-md-6">
             <label for="{{ form.fechaYHora.id_for_label }}" class="form-label">
-              <i class="bi bi-calendar2-date me-1"></i>{{ form.fechaYHora.label }}
+              <i class="bi bi-calendar2-date me-1"></i>Fecha y hora
             </label>
             <div class="input-group">
               {{ form.fechaYHora }}
@@ -26,46 +30,37 @@
               </span>
             </div>
           </div>
-          
+
           <div class="col-md-6">
             <label for="{{ form.video.id_for_label }}" class="form-label">
-              <i class="bi bi-camera-video me-1"></i>{{ form.video.label }}
+              <i class="bi bi-camera-video me-1"></i>{{ form.video.label }} (Opcional)
             </label>
-          
+
             <div class="input-group">
               {% if form.instance.video %}
-                <span 
-                  class="input-group-text text-truncate" 
-                  style="max-width: 150px;" 
-                  title="{{ form.instance.video.name }}"
-                >
-                  <small class="text-muted d-block mb-0">Actual:</small>
-                  <a href="{{ form.instance.video.url }}" 
-                     class="d-block text-truncate text-decoration-none">
-                    {{ form.instance.video.name }}
-                  </a>
-                </span>
+              <span class="input-group-text text-truncate" style="max-width: 150px;"
+                title="{{ form.instance.video.name }}">
+                <small class="text-muted d-block mb-0">Actual:</small>
+                <a href="{{ form.instance.video.url }}" class="d-block text-truncate text-decoration-none">
+                  {{ form.instance.video.name }}
+                </a>
+              </span>
               {% endif %}
-          
+
               <!-- input file “manual” -->
-              <input
-                type="file"
-                name="{{ form.video.name }}"
-                id="{{ form.video.id_for_label }}"
-                accept="video/*"
-                class="form-control"
-              />
-          
+              <input type="file" name="{{ form.video.name }}" id="{{ form.video.id_for_label }}" accept="video/*"
+                class="form-control" />
+
               <button class="btn btn-outline-secondary" type="button">
                 <i class="bi bi-upload"></i>
               </button>
             </div>
-          
+
             <div class="form-text text-muted mt-1">
               {% if form.instance.video %}¿Cambiar video?{% else %}Sube tu video{% endif %} (MP4, MOV, AVI)
             </div>
           </div>
-          
+
         </div>
 
         <!-- Segunda fila del formulario -->
@@ -90,12 +85,12 @@
               </div>
             </div>
           </div>
-          
+
         </div>
 
         <!-- Tercera fila del formulario -->
         <div class="row g-3 mb-3">
-          
+
           <div class="col-md-4">
             <div class="input-group">
               <span class="input-group-text bg-light"><i class="bi bi-currency-dollar"></i></span>
@@ -104,7 +99,16 @@
             </div>
             <label for="{{ form.pactada.id_for_label }}" class="form-label">{{ form.pactada.label }}</label>
           </div>
-          
+
+          <div class="col-md-4">
+            <div class="input-group">
+              <span class="input-group-text bg-light"><i class="bi bi-currency-dollar"></i></span>
+              {{ form.apuesta_general }}
+              <span class="input-group-text">$</span>
+            </div>
+            <label for="{{ form.apuesta_general.id_for_label }}" class="form-label">
+              {{ form.apuesta_general.label}}</label>
+          </div>
 
           <div class="col-md-4">
             <div class="input-group">
@@ -114,19 +118,21 @@
             </div>
             <label for="{{ form.pago_juez.id_for_label }}" class="form-label">{{ form.pago_juez.label }}</label>
           </div>
-
-          <div class="col-md-4">
-            <div class="input-group">
-              <span class="input-group-text bg-light"><i class="bi bi-currency-dollar"></i></span>
-              {{ form.apuesta_general }}
-              <span class="input-group-text">$</span>
-            </div>
-            <label for="{{ form.apuesta_general.id_for_label }}" class="form-label">{{ form.apuesta_general.label }}</label>
-          </div>
         </div>
 
         <!-- Cuarta fila del formulario -->
         <div class="row g-3 mb-3">
+
+          <div class="col-md-4">
+            <div class="input-group">
+              <span class="input-group-text bg-light"><i class="bi bi-cash-stack"></i></span>
+              {{ form.apuesta_por_fuera }}
+              <span class="input-group-text">$</span>
+            </div>
+            <label for="{{ form.apuesta_por_fuera.id_for_label }}" class="form-label">
+              {{ form.apuesta_por_fuera.label}}</label>
+          </div>
+
           <div class="col-md-4">
             <div class="input-group">
               <span class="input-group-text bg-light"><i class="bi bi-trophy"></i></span>
@@ -135,36 +141,80 @@
             </div>
             <label for="{{ form.premio_mayor.id_for_label }}" class="form-label">Valor total del pollón</label>
           </div>
+
           <div class="col-md-4">
             <div class="input-group">
               <span class="input-group-text bg-light"><i class="bi bi-percent"></i></span>
               {{ form.porcentaje_premio_mayor }}
               <span class="input-group-text">%</span>
             </div>
-            <label for="{{ form.porcentaje_premio_mayor.id_for_label }}" class="form-label">Porcentaje ganado del pollón</label>
+            <label for="{{ form.porcentaje_premio_mayor.id_for_label }}" class="form-label">Porcentaje ganado del
+              pollón</label>
           </div>
-          <div class="col-md-4">
-            <div class="input-group">
-              <span class="input-group-text bg-light"><i class="bi bi-cash-stack"></i></span>
-              {{ form.apuesta_por_fuera }}
-              <span class="input-group-text">$</span>
-            </div>
-            <label for="{{ form.apuesta_por_fuera.id_for_label }}" class="form-label">{{ form.apuesta_por_fuera.label }}</label>
-          </div>
+
         </div>
 
         <!-- Quinta fila del formulario -->
         <div class="row g-3 mb-3">
-          <div class="col-md-6">
-            <label for="{{ form.resultado.id_for_label }}" class="form-label">
-              <i class="bi bi-flag me-1"></i>{{ form.resultado.label }}
-            </label>
+          <div class="col-md-4">
             <div class="input-group">
-              <span class="input-group-text bg-light"><i class="bi bi-check2-circle"></i></span>
+              <span class="input-group-text bg-light"><i class="bi bi-flag me-1"></i></span>
               {{ form.resultado }}
             </div>
+            <label for="{{ form.resultado.id_for_label }}" class="form-label">
+              {{ form.resultado.label }}
+            </label>
+          </div>
+          <div class="col-md-4">
+            <div class="input-group">
+              <span class="input-group-text bg-light"><i class="bi bi-bandaid"></i></span>
+              {{ form.condicionGallo }}
+            </div>
+            <label for="{{ form.condicionGallo.id_for_label }}" class="form-label">
+              Condición del gallo luego del encuentro
+            </label>
+          </div>
+
+          <div class="col-md-4">
+            <div class="input-group">
+              <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+              {{ form.duenoEvento }}
+            </div>
+            <label for="{{ form.duenoEvento.id_for_label }}" class="form-label">
+              </i>Dueño del evento
+            </label>
           </div>
         </div>
+
+<div class="col-md-6">
+  <label for="{{ form.imagen_evento.id_for_label }}" class="form-label">
+    <i class="bi bi-image me-1"></i>Imagen del evento (Opcional)
+  </label>
+
+  <div class="input-group">
+    {% if form.instance.imagen_evento %}
+    <span class="input-group-text text-truncate" style="max-width: 150px;"
+      title="{{ form.instance.imagen_evento.name }}">
+      <small class="text-muted d-block mb-0">Actual:</small>
+      <a href="{{ form.instance.imagen_evento.url }}" class="d-block text-truncate text-decoration-none">
+        {{ form.instance.imagen_evento.name }}
+      </a>
+    </span>
+    {% endif %}
+
+    <input type="file" name="{{ form.imagen_evento.name }}" id="{{ form.imagen_evento.id_for_label }}" accept="image/*"
+      class="form-control" />
+
+    <button class="btn btn-outline-secondary" type="button">
+      <i class="bi bi-upload"></i>
+    </button>
+  </div>
+
+  <div class="form-text text-muted mt-1">
+    {% if form.instance.imagen_evento %}¿Cambiar imagen?{% else %}Sube una imagen{% endif %} (JPG, PNG)
+  </div>
+</div>
+
 
         <!-- Selección de gallo -->
         <div class="card mt-4 mb-4 border-primary">
@@ -182,27 +232,143 @@
 
               <div id="galloSeleccionado" class="ms-3">
                 {% if encuentro and encuentro.gallo %}
-                  <span class="badge bg-success p-2">
-                    <i class="bi bi-tag-fill me-1"></i>Placa {{ encuentro.gallo.nroPlaca }}
-                  </span>
+                <span class="badge bg-success p-2">
+                  <i class="bi bi-tag-fill me-1"></i>Placa {{ encuentro.gallo.nroPlaca }}
+                </span>
                 {% else %}
-                  <span class="badge bg-secondary p-2">No seleccionado</span>
+                <span class="badge bg-secondary p-2">No seleccionado</span>
                 {% endif %}
               </div>
             </div>
 
             <!-- Campo oculto para el gallo -->
-            <input type="hidden" name="gallo" id="galloHidden" value="{{ encuentro.gallo.nroPlaca|default:'' }}">
+            <input type="hidden" name="gallo" id="galloHidden" value="{{ encuentro.gallo.idGallo|default:'' }}">
           </div>
         </div>
 
-        <div class="d-flex justify-content-end mt-4">
+        <button type="button" id="btnCalcularGastos" class="btn btn-danger">
+          <i class="bi bi-calculator me-2"></i>Calcular
+        </button>
+
+        <div class="card mt-4 mb-4 border-primary" id="cardCalculos" style="display: none;">
+          <div class="card-header bg-light">
+            <h5 class="mb-0">
+              <i class="bi bi-calculator me-2"></i>Calculos
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <!-- Columna Izquierda -->
+              <div class="col-md-6 mb-4">
+                <div class="bg-light p-3 rounded mb-3">
+                  <h5 class="text-primary mb-3"><i class="bi bi-coin me-2"></i>Detalles de Apuestas</h5>
+
+                  <div class="d-flex justify-content-between border-bottom pb-2">
+                    <span>1. Apuesta pactada:</span>
+                    <strong class="text-success">$<span id="valorPactada"></span></strong>
+                  </div>
+
+                  <div class="d-flex justify-content-between border-bottom pb-2 pt-2">
+                    <span>2. Apuesta general:</span>
+                    <strong class="text-success">$<span id="valorApuestaGeneral"></span></strong>
+                  </div>
+
+                  <div class="d-flex justify-content-between border-bottom pb-2 pt-2">
+                    <span>4. Apuesta por fuera:</span>
+                    <strong class="text-success">$<span id="valorApuestaPorFuera"></span></strong>
+                  </div>
+                </div>
+
+                <div class="bg-light p-3 rounded mb-3">
+                  <h5 class="text-primary mb-3"><i class="bi bi-calculator me-2"></i>Cálculos Finales</h5>
+
+                  <div class="d-flex justify-content-between border-bottom pb-2">
+                    <span>5. Valor total del pollón:</span>
+                    <strong class="text-info">$<span id="valorPollon"></span></strong>
+                  </div>
+
+                  <div class="d-flex justify-content-between pt-2">
+                    <span>6. % Ganado del pollón:</span>
+                    <strong class="text-info"><span id="porcentajePollon"></span>%</strong>
+                  </div>
+                </div>
+
+                <div class="bg-light p-3 rounded mb-3">
+                  <h5 class="text-primary mb-3"><i class="bi bi-cash-coin me-2"></i>Transacciones</h5>
+
+                  <div class="d-flex justify-content-between border-bottom pb-2">
+                    <span>3. Pago del juez:</span>
+                    <strong class="text-danger">$<span id="pagoJuez"></span></strong>
+                  </div>
+
+                  <div class="alert alert-warning mt-3">
+                    <h6><i class="bi bi-trophy me-2"></i>Resultado:</h6>
+                    <strong class="h5" id="resultadoEncuentro"></strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Columna Derecha -->
+              <div class="col-md-6">
+
+
+                <div class="bg-light p-3 rounded mb-3">
+                  <h5 class="text-primary mb-3"><i class="bi bi-graph-up me-2"></i>Ganancias</h5>
+                  <div class="mb-2">
+                    <span class="d-block">Pollón (<span id="valorPollonGanancias"></span>)</span>
+                    <span class="d-block">General (<span id="valorApuestaGeneralGanancias"></span>)</span>
+                    <span class="d-block">Por fuera (<span id="valorApuestaPorFueraGanancias"></span>)</span>
+                    <hr>
+                    <strong class="text-success h5">$<span id="ganancias"></span></strong>
+                  </div>
+                </div>
+
+                <div class="bg-light p-3 rounded mb-3">
+                  <h5 class="text-primary mb-3"><i class="bi bi-graph-down me-2"></i>Gastos</h5>
+                  <div class="mb-2">
+                    <span class="d-block">Juez (<span id="valorPagoJuezGastos"></span>)</span>
+                    <span class="d-block">Careador (<span id="valorPagoCareador"></span>)</span>
+                    <span class="d-block">Pactada (<span id="valorPactadaGastos"></span>)</span>
+                    <hr>
+                    <strong class="text-danger h5">$<span id="gastos"></span></strong>
+                  </div>
+                </div>
+
+                <div class="bg-primary p-3 rounded text-white">
+                  <h5><i class="bi bi-wallet2 me-2"></i>Total Final</h5>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <span class="d-block">Ganancias: $<span id="valorGananciasTotal"></span></span>
+                      <span class="d-block">Gastos: $<span id="valorGastosTotal"></span></span>
+                    </div>
+                    <strong class="h3">$<span id="total"></span></strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-danger mt-3" id="btnCerrarCalculos">
+              <i class="bi bi-x me-2"></i>Cerrar ventana de cálculos
+            </button>
+          </div>
+
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
           <a href="{% url 'listar_encuentros' %}" class="btn btn-outline-secondary me-2">
-            <i class="bi bi-arrow-left me-1"></i>Regresar al listado
+            <i class="bi bi-arrow-left me-1"></i>Volver al listado de encuentros
           </a>
-          <button type="submit" class="btn btn-success">
-            <i class="bi bi-save me-1"></i>Guardar Encuentro
-          </button>
+          <div>
+            <a href="{% url 'dueno_create' %}" class="btn btn-info px-4 me-2">
+              <i class="bi bi-house me-1"></i>Registrar dueños de eventos
+            </a>
+            <a href="{% url 'galpon_create' %}" class="btn btn-warning px-4 me-2">
+              <i class="bi bi-house me-1"></i>Registrar galpones
+            </a>
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-save me-1"></i>Guardar Encuentro
+            </button>
+          </div>
         </div>
 
       </form>
@@ -211,7 +377,8 @@
 </div>
 
 <!-- Modal Selección de Gallo -->
-<div class="modal fade" id="modalParticipantes" tabindex="-1" aria-labelledby="modalParticipantesLabel" aria-hidden="true">
+<div class="modal fade" id="modalParticipantes" tabindex="-1" aria-labelledby="modalParticipantesLabel"
+  aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header bg-primary text-white">
@@ -224,7 +391,7 @@
         <div class="alert alert-info">
           <i class="bi bi-info-circle me-2"></i>Haga clic en una fila para seleccionar un gallo.
         </div>
-        
+
         <div class="mb-3">
           <input type="text" class="form-control" id="buscarPlaca" placeholder="Buscar por placa...">
         </div>
@@ -240,10 +407,10 @@
             </thead>
             <tbody>
               {% for gallo in gallos %}
-              <tr class="gallo-row" data-placa="{{ gallo.nroPlaca }}">
+              <tr class="gallo-row" data-placa="{{ gallo.nroPlaca }}" data-idgallo="{{ gallo.idGallo }}">
                 <td>{{ gallo.nroPlaca }}</td>
                 <td>{{ gallo.color }}</td>
-                <td>{{ gallo.sexo }}</td>
+                <td>{{ gallo.get_sexo_display }}</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -264,74 +431,208 @@
 
 <script>
 
-  // Función de búsqueda
-document.getElementById('buscarPlaca').addEventListener('input', function(e) {
-  const searchTerm = e.target.value.toLowerCase();
-  
-  document.querySelectorAll('#tablaGallos .gallo-row').forEach(row => {
-    const placa = row.querySelector('td:first-child').textContent.toLowerCase();
-    row.style.display = placa.includes(searchTerm) ? '' : 'none';
+  const arregloDeInputs = ['id_pactada', 'id_apuesta_general', 'id_pago_juez', 'id_apuesta_por_fuera', 'id_premio_mayor', 'id_porcentaje_premio_mayor']
+  arregloDeInputs.forEach(inputId => {
+    const input = document.getElementById(inputId);
+    input.addEventListener('keydown', (evt) => {
+      if (["e", "E", "+", "-"].includes(evt.key)) {
+        evt.preventDefault();
+      }
+    });
   });
 
-  // Resetear selección al buscar
-  if (filaSeleccionada && filaSeleccionada.style.display === 'none') {
-    filaSeleccionada.classList.remove('table-primary');
-    galloSeleccionadoPlaca = null;
-    document.getElementById('confirmarGallo').disabled = true;
+
+  function calcular(pactada, apuestaGeneral, pagoJuez, apuestaPorFuera, totalPollon, porcentajePollon, resultado, resultadoTextual) {
+    const dineroDelPremioMayor = totalPollon * (porcentajePollon / 100);
+    const totalApostado = apuestaGeneral + apuestaPorFuera;
+
+    let dineroLuegoDeLaApuesta = 0;
+    let pagoCareador = 0;
+
+    try {
+      switch (resultado) {
+        case 'V': // Victoria
+          dineroLuegoDeLaApuesta = totalApostado + dineroDelPremioMayor;
+          pagoCareador = (apuestaGeneral * 0.15) + (dineroDelPremioMayor * 0.15);
+          btnCalcularGastos.style.display = 'none';
+          break;
+        case 'T': // Tablas
+          dineroLuegoDeLaApuesta = 0;
+          btnCalcularGastos.style.display = 'none';
+          break;
+        case 'D': // Derrota
+          dineroLuegoDeLaApuesta = -totalApostado;
+          btnCalcularGastos.style.display = 'none';
+          break;
+        default:
+          Swal.fire({
+            title: 'Atención',
+            text: 'El resultado seleccionado para el encuentro no es válido',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+          });
+          return;
+      }
+
+      // Calcular los gastos totales
+      const gastos = pagoCareador + pagoJuez + pactada;
+      const dineroFinal = dineroLuegoDeLaApuesta - gastos;
+
+      // Mostrar resultados en el card
+      cardCalculos.style.display = 'block';
+      document.getElementById('valorPactada').innerText = pactada.toFixed(2);
+      document.getElementById('valorApuestaGeneral').innerText = apuestaGeneral.toFixed(2);
+      document.getElementById('pagoJuez').innerText = pagoJuez.toFixed(2);
+      document.getElementById('valorApuestaPorFuera').innerText = apuestaPorFuera.toFixed(2);
+      document.getElementById('valorPollon').innerText = totalPollon.toFixed(2);
+      document.getElementById('porcentajePollon').innerText = porcentajePollon.toFixed(2);
+      document.getElementById('resultadoEncuentro').innerText = resultadoTextual;
+
+      // Llenar los valores dentro de los paréntesis
+      document.getElementById('valorPollonGanancias').innerText = totalPollon.toFixed(2);
+      document.getElementById('valorApuestaGeneralGanancias').innerText = apuestaGeneral.toFixed(2);
+      document.getElementById('valorApuestaPorFueraGanancias').innerText = apuestaPorFuera.toFixed(2);
+
+      document.getElementById('valorPagoJuezGastos').innerText = pagoJuez.toFixed(2);
+      document.getElementById('valorPagoCareador').innerText = pagoCareador.toFixed(2);
+      document.getElementById('valorPactadaGastos').innerText = pactada.toFixed(2);
+
+      // Ganancias y gastos
+      document.getElementById('ganancias').innerText = dineroLuegoDeLaApuesta.toFixed(2);
+      document.getElementById('gastos').innerText = gastos.toFixed(2);
+      document.getElementById('total').innerText = dineroFinal.toFixed(2);
+
+      // Llenar los totales en los paréntesis de Ganancias y Gastos
+      document.getElementById('valorGananciasTotal').innerText = dineroLuegoDeLaApuesta.toFixed(2);
+      document.getElementById('valorGastosTotal').innerText = gastos.toFixed(2);
+
+    } catch (error) {
+      console.error("Error en el cálculo: ", error);
+      return;
+    }
   }
-});
 
-// Resetear búsqueda al abrir modal
-document.getElementById('modalParticipantes').addEventListener('show.bs.modal', function() {
-  document.getElementById('buscarPlaca').value = '';
-  document.querySelectorAll('#tablaGallos .gallo-row').forEach(row => row.style.display = '');
-  // Resto del código existente...
-});
 
+  const btnCalcularGastos = document.getElementById("btnCalcularGastos");
+  btnCalcularGastos.addEventListener('click', function () {
+    let pactada = parseFloat(document.getElementById('id_pactada').value) || 0;
+    let apuestaGeneral = parseFloat(document.getElementById('id_apuesta_general').value) || 0;
+    let pagoJuez = parseFloat(document.getElementById('id_pago_juez').value) || 0;
+    let apuestaPorFuera = parseFloat(document.getElementById('id_apuesta_por_fuera').value) || 0;
+    let totalPollon = parseFloat(document.getElementById('id_premio_mayor').value) || 0;
+    let porcentajePollon = parseFloat(document.getElementById('id_porcentaje_premio_mayor').value) || 0;
+    let resultado = document.getElementById('id_resultado').value;
+    let resultadoTextual = document.querySelector('#id_resultado option:checked').textContent;
+
+    calcular(pactada, apuestaGeneral, pagoJuez, apuestaPorFuera, totalPollon, porcentajePollon, resultado, resultadoTextual);
+  });
+
+  //para cerrar el card de cálculos
+  const btnCerrarCalculos = document.getElementById("btnCerrarCalculos");
+  btnCerrarCalculos.addEventListener('click', function () {
+    const cardCalculos = document.getElementById("cardCalculos");
+    cardCalculos.style.display = 'none';
+    //volver a mostrar el boton de calcular
+    btnCalcularGastos.style.display = 'block';
+  });
+
+  // bloquear inputs de premio mayor y porcentaje
+  const selectResultado = document.getElementById('id_resultado');
+  const inputs = ['id_premio_mayor', 'id_porcentaje_premio_mayor'];
+
+  function limpiarYBloquearInputs() {
+    inputs.forEach(id => {
+      const input = document.getElementById(id);
+      input.value = '';
+      input.disabled = true;
+      input.style.backgroundColor = '#A7A6A6';
+    });
+  }
+
+
+  function habilitarInputs() {
+    inputs.forEach(id => {
+      const input = document.getElementById(id);
+      input.disabled = false;
+      input.style.backgroundColor = '';
+    });
+  }
+
+  selectResultado.addEventListener('change', function () {
+    const valorSeleccionado = selectResultado.value;
+
+    if (valorSeleccionado !== 'V') {
+      limpiarYBloquearInputs();
+    } else {
+      habilitarInputs();
+    }
+  });
+
+
+
+  // Función de búsqueda
+  document.getElementById('buscarPlaca').addEventListener('input', function (e) {
+    const searchTerm = e.target.value.toLowerCase();
+
+    document.querySelectorAll('#tablaGallos .gallo-row').forEach(row => {
+      const placa = row.querySelector('td:first-child').textContent.toLowerCase();
+      row.style.display = placa.includes(searchTerm) ? '' : 'none';
+    });
+
+    // Resetear selección al buscar
+    if (filaSeleccionada && filaSeleccionada.style.display === 'none') {
+      filaSeleccionada.classList.remove('table-primary');
+      galloSeleccionadoPlaca = null;
+      document.getElementById('confirmarGallo').disabled = true;
+    }
+  });
+
+  // Resetear búsqueda al abrir modal
+  document.getElementById('modalParticipantes').addEventListener('show.bs.modal', function () {
+    document.getElementById('buscarPlaca').value = '';
+    document.querySelectorAll('#tablaGallos .gallo-row').forEach(row => row.style.display = '');
+  });
+
+  let idGalloSeleccionado = null;
   let galloSeleccionadoPlaca = null;
   let filaSeleccionada = null;
 
+  // Seleccionar fila de gallo
   document.querySelectorAll('#tablaGallos .gallo-row').forEach(row => {
-    row.addEventListener('click', function() {
+    row.addEventListener('click', function () {
       document.querySelectorAll('#tablaGallos .gallo-row').forEach(r => {
         r.classList.remove('table-primary');
       });
-      
+
       this.classList.add('table-primary');
       filaSeleccionada = this;
       galloSeleccionadoPlaca = this.dataset.placa;
-      //console.log("Fila seleccionada - Placa:", galloSeleccionadoPlaca);
+      idGalloSeleccionado = this.dataset.idgallo;
       document.getElementById('confirmarGallo').disabled = false;
     });
   });
 
-  document.getElementById("confirmarGallo").addEventListener("click", function() {
+  // Confirmar selección de gallo
+  document.getElementById("confirmarGallo").addEventListener("click", function () {
     const cont = document.getElementById("galloSeleccionado");
-    
+
     if (galloSeleccionadoPlaca) {
       cont.innerHTML = '';
-      
-      cont.innerHTML = `<span class="badge bg-success p-2"><i class="bi bi-tag-fill me-1"></i>Placa ${galloSeleccionadoPlaca}</span>`;
-
-      document.getElementById("galloHidden").value = galloSeleccionadoPlaca;
-      
-      //console.log("Gallo seleccionado y confirmado - Placa:", galloSeleccionadoPlaca);
-      
+      cont.innerHTML = `<span class="badge bg-success p-2"><i class="bi bi-tag-fill me-1"></i>Placa ${galloSeleccionadoPlaca}</span>`; //setear placa
+      document.getElementById("galloHidden").value = idGalloSeleccionado;//setear id
       var modalEl = document.getElementById('modalParticipantes');
       var modal = bootstrap.Modal.getInstance(modalEl);
       modal.hide();
-    } else {
-      console.log("No se ha seleccionado ningún gallo");
     }
   });
 
-  document.getElementById('modalParticipantes').addEventListener('show.bs.modal', function() {
+  document.getElementById('modalParticipantes').addEventListener('show.bs.modal', function () {
     document.querySelectorAll('#tablaGallos .gallo-row').forEach(r => {
       r.classList.remove('table-primary');
     });
-    
+
     document.getElementById('confirmarGallo').disabled = true;
-    
+
     const galloPlaca = document.getElementById("galloHidden").value;
     if (galloPlaca) {
       const filaPrevia = document.querySelector(`#tablaGallos .gallo-row[data-placa="${galloPlaca}"]`);
@@ -344,10 +645,9 @@ document.getElementById('modalParticipantes').addEventListener('show.bs.modal', 
     }
   });
 
-  document.getElementById("encuentroForm").addEventListener("submit", function(e) {
+  document.getElementById("encuentroForm").addEventListener("submit", function (e) {
     const galloPlaca = document.getElementById("galloHidden").value;
-    //console.log("Formulario enviado con gallo placa:", galloPlaca);
-    
+
     if (!galloPlaca) {
       e.preventDefault();
       Swal.fire({
@@ -359,14 +659,13 @@ document.getElementById('modalParticipantes').addEventListener('show.bs.modal', 
     }
   });
 
-  // Validación de formulario con Bootstrap
-  (function() {
+  (function () {
     'use strict';
-    
+
     var forms = document.querySelectorAll('.needs-validation');
-    
-    Array.prototype.slice.call(forms).forEach(function(form) {
-      form.addEventListener('submit', function(event) {
+
+    Array.prototype.slice.call(forms).forEach(function (form) {
+      form.addEventListener('submit', function (event) {
         if (!form.checkValidity() && document.getElementById("galloHidden").value) {
           event.preventDefault();
           event.stopPropagation();

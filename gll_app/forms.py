@@ -7,11 +7,22 @@ class GalloForm(forms.ModelForm):
         exclude = ['placaPadre', 'placaMadre']
         widgets = {
             'nroPlaca': forms.TextInput(attrs={'class': 'form-control'}),
-            'color': forms.TextInput(attrs={'class': 'form-control'}),
             'sexo': forms.Select(attrs={'class': 'form-select'}),
             'tipoGallo': forms.Select(attrs={'class': 'form-select'}),
             'observaciones': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'nombre_img': forms.FileInput(attrs={'class': 'form-control'}),
+            'peso': forms.NumberInput(attrs={'class': 'form-control'}),
+            'nroPlacaAnterior': forms.NumberInput(attrs={'class': 'form-control'}),
+            'nombreDuenoAnterior': forms.TextInput(attrs={'class': 'form-control'}),
+            'estadoDeSalud': forms.Select(attrs={'class': 'form-select'}),
+            'fechaMuerte': forms.DateInput(
+                attrs={
+                    'type': 'date',
+                    'class': 'form-control'
+                },
+                format='%Y-%m-%d'
+            ),
+            'color': forms.Select(attrs={'class': 'form-control'}),
         }
 
     fechaNac = forms.DateField(
@@ -32,7 +43,7 @@ class EncuentroForm(forms.ModelForm):
             'fechaYHora', 'galpon1', 'galpon2', 'video',
             'pactada', 'pago_juez', 'apuesta_general',
             'premio_mayor', 'porcentaje_premio_mayor', 'apuesta_por_fuera',
-            'resultado',
+            'resultado', 'condicionGallo', 'duenoEvento', 'imagen_evento',
         ]
         widgets = {
             'fechaYHora': forms.DateTimeInput(
@@ -40,7 +51,10 @@ class EncuentroForm(forms.ModelForm):
                 format='%Y-%m-%dT%H:%M'
             ),
             'video': forms.ClearableFileInput(attrs={'accept': 'video/*'}),
-            'resultado': forms.Select(attrs={'class': 'form-select'})
+            'resultado': forms.Select(attrs={'class': 'form-select'}),
+            'condicionGallo': forms.TextInput(attrs={'class': 'form-control'}),
+            'duenoEvento': forms.Select(attrs={'class': 'form-select'}),
+            'imagen_evento': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -48,6 +62,39 @@ class EncuentroForm(forms.ModelForm):
         for field in self.fields:
             self.fields[field].widget.attrs.update({
                 'class': 'form-control',
-                'placeholder': self.fields[field].label
             })
         self.fields['video'].required = False
+        self.fields['imagen_evento'].required = False
+        
+        
+class ColorForm(forms.ModelForm):
+    class Meta:
+        model = Color
+        fields = ['nombre']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control ', 'placeholder': 'Nombre del color'}),
+        }
+
+class EstadoForm(forms.ModelForm):
+    class Meta:
+        model = Estado
+        fields = ['nombre']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del estado'}),
+        }
+
+class GalponForm(forms.ModelForm):
+    class Meta:
+        model = Galpon
+        fields = ['nombre']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del galpón'}),
+        }
+
+class DuenoForm(forms.ModelForm):
+    class Meta:
+        model = Dueno
+        fields = ['nombre']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del dueño'}),
+        }

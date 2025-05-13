@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Formulario de Dueño{% endblock %}
+
+{% block content %}
+<h1>{% if form.instance.pk %}Editar{% else %}Nuevo{% endif %} Dueño</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">{% if form.instance.pk %}Actualizar{% else %}Crear{% endif %}</button>
+</form>
+<a href="{% url 'dueno_list' %}" class="btn btn-secondary mt-3">Cancelar, ver dueños de los eventos</a>
+<a href="{% url 'crear_encuentro' %}" class="btn btn-secondary mt-3">Cancelar, registrar encuentros</a>
+{% endblock %}

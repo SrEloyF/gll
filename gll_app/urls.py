@@ -3,10 +3,10 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('ver/<int:nroPlaca>/', views.ver, name='ver'),
+    path('ver/<int:idGallo>/', views.ver, name='ver'),
     path('crear/', views.crear, name='crear'),
-    path('editar/<int:nroPlaca>/', views.editar, name='editar'),
-    path('eliminar/<int:nroPlaca>/', views.eliminar, name='eliminar'),
+    path('editar/<int:idGallo>/', views.editar, name='editar'),
+    path('eliminar/<int:idGallo>/', views.eliminar, name='eliminar'),
 
     #encuentros
     path('encuentros/', views.listar_encuentros, name='listar_encuentros'),
@@ -15,4 +15,24 @@ urlpatterns = [
     path('encuentros/editar/<int:pk>/', views.encuentro_form, name='editar_encuentro'),
     path('encuentros/eliminar/<int:pk>/', views.eliminar_encuentro, name='eliminar_encuentro'),
     path('export-db/', views.export_db, name='export_db'),
+
+    #colores
+    path('color', views.color_list, name='color_list'),
+    path('color/nuevo/', views.color_create, name='color_create'),
+    path('color/<int:pk>/editar/', views.color_edit, name='color_edit'),
+
+    #estados
+    path('estado', views.estado_list, name='estado_list'),
+    path('estado/nuevo/', views.estado_create, name='estado_create'),
+    path('estado/<int:pk>/editar/', views.estado_edit, name='estado_edit'),
+
+    # Galpones
+    path('galpon', views.galpon_list, name='galpon_list'),
+    path('galpon/nuevo/', views.galpon_create, name='galpon_create'),
+    path('galpon/<int:pk>/editar/', views.galpon_edit, name='galpon_edit'),
+
+    # URLs para dueños
+    path('dueno', views.dueno_list, name='dueno_list'),
+    path('dueno/nuevo/', views.dueno_create, name='dueno_create'),
+    path('dueno/<int:pk>/editar/', views.dueno_edit, name='dueno_edit'),
 ]

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Galpones{% endblock %}
+
+{% block content %}
+<h1>Lista de Galpones</h1>
+<a href="{% url 'galpon_create' %}" class="btn btn-primary mb-3">Agregar Galpón</a>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for galpon in galpones %}
+        <tr>
+            <td>{{ galpon.nombre }}</td>
+            <td>
+                <a href="{% url 'galpon_edit' galpon.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete({{ galpon.pk }})">Eliminar</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'listar_encuentros' %}" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i>Volver al listado de encuentros
+</a>
+<a href="{% url 'crear_encuentro' %}" class="btn btn-secondary mt-3">Registrar encuentro</a>
+
+<script>
+    function confirmDelete(galponId) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡Esta acción no se puede deshacer!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Eliminar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '';
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = 'csrfmiddlewaretoken';
+                csrfToken.value = '{{ csrf_token }}';
+                form.appendChild(csrfToken);
+                const deleteInput = document.createElement('input');
+                deleteInput.type = 'hidden';
+                deleteInput.name = 'delete_galpon';
+                deleteInput.value = galponId;
+                form.appendChild(deleteInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+</script>
+
+{% endblock %}

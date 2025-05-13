@@ -57,7 +57,7 @@
                       <th class="ps-3" style="width: 35%;">
                         <i class="bi bi-palette me-2"></i>Color
                       </th>
-                      <td>{{ gallo.color }}</td>
+                      <td>{{ gallo.color.nombre }}</td>
                     </tr>
                     <tr>
                       <th class="ps-3">
@@ -81,6 +81,55 @@
                       </th>
                       <td>{{ gallo.fechaNac }}</td>
                     </tr>
+
+                    <tr>
+                      <th class="ps-3">
+                        <i class="bi bi-speedometer2 me-2"></i>Peso
+                      </th>
+                      <td>{{ gallo.peso }}</td>
+                    </tr>
+
+                    <tr>
+                      <th class="ps-3">
+                        <i class="bi bi-bandaid me-2"></i>Estado de salud
+                      </th>
+                      <td>{{ gallo.estadoDeSalud }}</td>
+                    </tr>
+
+                    {% if gallo.nroPlacaAnterior %}
+                    <tr>
+                      <th class="ps-3">
+                        <i class="bi bi-shield-lock me-2"></i>Placa anterior
+                      </th>
+                      <td>{{ gallo.nroPlacaAnterior }}</td>
+                    </tr>
+                    {% endif %}
+
+                    {% if gallo.nombreDuenoAnterior %}
+                    <tr>
+                      <th class="ps-3">
+                        <i class="bi bi-person-x me-2"></i>Dueño anterior
+                      </th>
+                      <td>{{ gallo.nombreDuenoAnterior }}</td>
+                    </tr>
+                    {% endif %}
+
+                    {% if gallo.fechaMuerte %}
+                    <tr>
+                      <th class="ps-3">
+                        <i class="bi bi-calendar-x me-2"></i>Fecha de muerte
+                      </th>
+                      <td>{{ gallo.fechaMuerte }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                      <th class="ps-3">
+                        <i class="bi bi-calendar-x me-2"></i>Edad
+                      </th>
+                      <td>{{ edadGallo }}</td>
+                    </tr>
+                    {% endif %}
+
                     <tr>
                       <th class="ps-3">
                         <i class="bi bi-chat-left-text me-2"></i>Observaciones
@@ -125,7 +174,7 @@
                           <strong>Color:</strong> {{ gallo.placaPadre.color }}
                         </p>
                         <div class="d-grid mt-3">
-                          <a href="{% url 'ver' gallo.placaPadre.nroPlaca %}" class="btn btn-sm btn-primary">
+                          <a href="{% url 'ver' gallo.placaPadre.idGallo %}" class="btn btn-sm btn-primary">
                             <i class="bi bi-eye me-1"></i>Ver detalles
                           </a>
                         </div>
@@ -156,7 +205,7 @@
                           <strong>Color:</strong> {{ gallo.placaMadre.color }}
                         </p>
                         <div class="d-grid mt-3">
-                          <a href="{% url 'ver' gallo.placaMadre.nroPlaca %}" class="btn btn-sm btn-danger">
+                          <a href="{% url 'ver' gallo.placaMadre.idGallo %}" class="btn btn-sm btn-danger">
                             <i class="bi bi-eye me-1"></i>Ver detalles
                           </a>
                         </div>
@@ -175,10 +224,10 @@
           
           <!-- Botones de acción -->
           <div class="d-flex gap-2 justify-content-end mt-4">
-            <a href="{% url 'editar' gallo.nroPlaca %}" class="btn btn-warning">
+            <a href="{% url 'editar' gallo.idGallo %}" class="btn btn-warning">
               <i class="bi bi-pencil-square me-1"></i>Editar
             </a>
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#eliminarModal">
+            <button type="button" class="btn btn-danger" id="eliminarButton">
               <i class="bi bi-trash me-1"></i>Eliminar
             </button>
           </div>
@@ -188,26 +237,37 @@
   </div>
 </div>
 
-<!-- Modal de confirmación de eliminación -->
-<div class="modal fade" id="eliminarModal" tabindex="-1" aria-labelledby="eliminarModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="eliminarModalLabel">Confirmar eliminación</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p>¿Está seguro que desea eliminar el gallo con placa <strong>{{ gallo.nroPlaca }}</strong>?</p>
-        <p class="text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Esta acción no se puede deshacer.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <form action="{% url 'eliminar' gallo.nroPlaca %}" method="post" class="d-inline">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-danger">Confirmar eliminación</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+<script>
+  document.getElementById('eliminarButton').addEventListener('click', function() {
+    Swal.fire({
+      title: '¿Está seguro?',
+      html: `¿Desea eliminar el gallo con placa <strong>{{ gallo.nroPlaca }}</strong>?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#aaa',
+      confirmButtonText: 'Confirmar eliminación',
+      cancelButtonText: 'Cancelar',
+      customClass: {
+        title: 'text-danger',
+        icon: 'text-warning'
+      },
+      preConfirm: () => {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{% url "eliminar" gallo.idGallo %}';
+        
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = 'csrfmiddlewaretoken';
+        csrfToken.value = '{{ csrf_token }}';
+        
+        form.appendChild(csrfToken);
+        
+        document.body.appendChild(form);
+        form.submit();
+      }
+    });
+  });
+</script>
 {% endblock %}

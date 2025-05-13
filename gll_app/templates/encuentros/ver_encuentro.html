@@ -45,6 +45,14 @@
                   <span class="badge bg-primary p-2">{{ encuentro.gallo }}</span>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                  <div><i class="bi bi-award me-2 text-primary"></i><strong>Condición del gallo:</strong></div>
+                  <span>{{ encuentro.condicionGallo }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                  <div><i class="bi bi-award me-2 text-primary"></i><strong>Dueño del evento:</strong></div>
+                  <span>{{ encuentro.duenoEvento }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                   <div><i class="bi bi-flag me-2 text-primary"></i><strong>Resultado:</strong></div>
                   <span class="badge {% if encuentro.resultado == 'V' %}bg-success{% elif encuentro.resultado == 'T' %}bg-warning text-dark{% else %}bg-danger{% endif %} p-2">
                     {{ encuentro.get_resultado_display }}
@@ -52,144 +60,486 @@
                 </li>
               </ul>
             </div>
+
             <div class="col-md-6">
-              <h5 class="border-bottom pb-2 mb-3"><i class="bi bi-camera-video me-2"></i>Video del Encuentro</h5>
-              {% if encuentro.video %}
-                <div class="ratio ratio-16x9 mb-2">
-                  <video controls class="rounded shadow-sm">
-                    <source src="{{ encuentro.video.url }}" type="video/mp4">
-                    Su navegador no soporta la reproducción de video.
-                  </video>
-                </div>
-                <a href="{{ encuentro.video.url }}" download class="btn btn-sm btn-outline-primary">
-                  <i class="bi bi-download me-1"></i>Descargar video
-                </a>
-              {% else %}
-                <div class="alert alert-secondary">
-                  <i class="bi bi-camera-video-off me-2"></i>Video no disponible
-                </div>
-              {% endif %}
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0"><i class="bi bi-collection-play me-2"></i>Recursos del Evento</h5>
+    </div>
+    <div class="card-body p-0">
+      <!-- Pestañas de navegación -->
+      <ul class="nav nav-pills nav-fill p-2 bg-light" id="recursos-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="video-tab" data-bs-toggle="tab" data-bs-target="#video-content" type="button" role="tab" aria-controls="video-content" aria-selected="true">
+            <i class="bi bi-camera-video me-2"></i>Video
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="imagen-tab" data-bs-toggle="tab" data-bs-target="#imagen-content" type="button" role="tab" aria-controls="imagen-content" aria-selected="false">
+            <i class="bi bi-image me-2"></i>Imagen
+          </button>
+        </li>
+      </ul>
+      
+      <!-- Contenido de las pestañas -->
+      <div class="tab-content p-3" id="recursos-tabs-content">
+        <!-- Pestaña de Video -->
+        <div class="tab-pane fade show active" id="video-content" role="tabpanel" aria-labelledby="video-tab">
+          {% if encuentro.video %}
+            <div class="ratio ratio-16x9 mb-3">
+              <video controls class="rounded shadow-sm">
+                <source src="{{ encuentro.video.url }}" type="video/mp4">
+                Su navegador no soporta la reproducción de video.
+              </video>
             </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="text-muted small">
+                <i class="bi bi-info-circle me-1"></i>Video del encuentro
+              </span>
+              <a href="{{ encuentro.video.url }}" download class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-download me-1"></i>Descargar video
+              </a>
+            </div>
+          {% else %}
+            <div class="text-center py-5">
+              <i class="bi bi-camera-video-off text-muted display-4"></i>
+              <h6 class="text-muted mt-3">Video no disponible</h6>
+              <p class="text-muted small">No se ha cargado ningún video para este encuentro.</p>
+            </div>
+          {% endif %}
+        </div>
+        
+        <!-- Pestaña de Imagen -->
+        <div class="tab-pane fade" id="imagen-content" role="tabpanel" aria-labelledby="imagen-tab">
+          {% if encuentro.imagen_evento %}
+            <div class="text-center mb-3">
+              <img src="{{ encuentro.imagen_evento.url }}" alt="Imagen del Encuentro" class="img-fluid rounded shadow-sm mb-2" style="max-height: 400px;">
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="text-muted small">
+                <i class="bi bi-info-circle me-1"></i>Imagen del encuentro
+              </span>
+              <a href="{{ encuentro.imagen_evento.url }}" download class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-download me-1"></i>Descargar imagen
+              </a>
+            </div>
+          {% else %}
+            <div class="text-center py-5">
+              <i class="bi bi-image-alt text-muted display-4"></i>
+              <h6 class="text-muted mt-3">Imagen no disponible</h6>
+              <p class="text-muted small">No se ha cargado ninguna imagen para este encuentro.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
           </div>
         </div>
       </div>
 
       <!-- Resumen Financiero -->
-      <div class="card shadow-sm mb-4">
-        <div class="card-header bg-primary text-white">
-          <h3 class="mb-0"><i class="bi bi-cash-coin me-2"></i>Resumen Financiero</h3>
+<div class="container py-4">
+  <!-- Tarjeta principal de resumen financiero -->
+  <div class="card shadow-lg border-0 mb-4">
+    <div class="card-header bg-primary text-white p-3">
+      <h3 class="mb-0 d-flex align-items-center">
+        <i class="bi bi-cash-coin me-2"></i>Resumen Financiero
+      </h3>
+    </div>
+    
+    <div class="card-body p-0">
+      <!-- Panel de pestañas para organizar la información -->
+      <ul class="nav nav-pills nav-fill p-3 bg-light" id="financialTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">
+            <i class="bi bi-clipboard-data me-2"></i>Vista General
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="income-tab" data-bs-toggle="tab" data-bs-target="#income" type="button" role="tab" aria-controls="income" aria-selected="false">
+            <i class="bi bi-graph-up-arrow me-2"></i>Ingresos
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="expenses-tab" data-bs-toggle="tab" data-bs-target="#expenses" type="button" role="tab" aria-controls="expenses" aria-selected="false">
+            <i class="bi bi-graph-down-arrow me-2"></i>Gastos
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="calculations-tab" data-bs-toggle="tab" data-bs-target="#calculations" type="button" role="tab" aria-controls="calculations" aria-selected="false">
+            <i class="bi bi-calculator me-2"></i>Cálculos
+          </button>
+        </li>
+      </ul>
+      
+      <!-- Contenido de las pestañas -->
+      <div class="tab-content p-3" id="financialTabsContent">
+        <!-- Pestaña de Vista General -->
+        <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+          <div class="row">
+            <!-- Tarjeta de resultado final -->
+            <div class="col-md-6 mb-3">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                  <h5 class="card-title text-primary">
+                    <i class="bi bi-trophy me-2"></i>Resultado Final ({{ encuentro.get_resultado_display }})
+                  </h5>
+                  <div class="display-4 my-3 {% if dinero_final > 0 %}text-success{% else %}text-danger{% endif %}">
+                    ${{ dinero_final }}
+                  </div>
+                  <div class="badge bg-{% if dinero_final > 0 %}success{% else %}danger{% endif %} p-2">
+                    <i class="bi bi-{% if dinero_final > 0 %}arrow-up-circle-fill{% else %}arrow-down-circle-fill{% endif %} me-1"></i>
+                    {{ encuentro.get_resultado_display }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Tarjeta de resumen -->
+            <div class="col-md-6 mb-3">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title text-primary">
+                    <i class="bi bi-clipboard-check me-2"></i>Resumen
+                  </h5>
+                  <div class="list-group list-group-flush">
+                    <div class="list-group-item d-flex justify-content-between align-items-center bg-light">
+                      <span><i class="bi bi-cash-stack text-success me-2"></i>Total Invertido</span>
+                      <span class="fw-bold">${{ todo_el_dinero_apostado }}</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                      <span><i class="bi bi-currency-dollar text-primary me-2"></i>Después de Apuesta</span>
+                      <span class="fw-bold">${{ dinero_luego_de_la_apuesta }}</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center bg-light">
+                      <span><i class="bi bi-basket3 text-danger me-2"></i>Total Gastos</span>
+                      <span class="fw-bold">${{ gastos }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table mb-0">
-              <thead>
-                <tr class="table-light">
-                  <th colspan="4">Resumen de Transacciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="table-info">
-                  <td colspan="4" class="fw-bold"><i class="bi bi-graph-up-arrow me-2"></i>INGRESOS</td>
-                </tr>
-                <tr>
-                  <td><i class="bi bi-cash me-2 text-success"></i>Apuesta general</td>
-                  <td class="text-end">{{ encuentro.apuesta_general }}</td>
-                  <td><i class="bi bi-cash-stack me-2 text-success"></i>Apuesta por fuera</td>
-                  <td class="text-end">{{ encuentro.apuesta_por_fuera }}</td>
-                </tr>
-                <tr class="table-light">
-                  <td colspan="3" class="fw-bold">Total dinero invertido</td>
-                  <td class="text-end fw-bold">{{ todo_el_dinero_apostado }}</td>
-                </tr>
-                <tr class="table-secondary">
-                  <td colspan="4" class="small fst-italic">
-                    <i class="bi bi-calculator me-1"></i>Cálculo: {{ encuentro.apuesta_general }} + {{ encuentro.apuesta_por_fuera }} = {{ todo_el_dinero_apostado }}
-                  </td>
-                </tr>
-                
-                {% if encuentro.premio_mayor > 0 and encuentro.porcentaje_premio_mayor > 0 %}
-                <tr class="table-success">
-                  <td colspan="4" class="fw-bold"><i class="bi bi-star-fill me-2 text-warning"></i>POLLÓN</td>
-                </tr>
-                <tr>
-                  <td><i class="bi bi-trophy-fill me-2 text-warning"></i>Pollón</td>
-                  <td class="text-end">{{ encuentro.premio_mayor }}</td>
-                  <td><i class="bi bi-percent me-2"></i>Porcentaje</td>
-                  <td class="text-end">{{ encuentro.porcentaje_premio_mayor }}%</td>
-                </tr>
-                <tr class="table-light">
-                  <td colspan="3" class="fw-bold">Dinero correspondiente del pollón</td>
-                  <td class="text-end fw-bold">{{ dinero_del_premio_mayor }}</td>
-                </tr>
-                <tr class="table-secondary">
-                  <td colspan="4" class="small fst-italic">
-                    <i class="bi bi-calculator me-1"></i>Cálculo: {{ encuentro.premio_mayor }} × ({{ encuentro.porcentaje_premio_mayor }}%) = {{ dinero_del_premio_mayor }}
-                  </td>
-                </tr>
-                {% endif %}
-                
-                <tr class="{% if encuentro.resultado == 'V' %}table-success{% elif encuentro.resultado == 'T' %}table-warning{% else %}table-danger{% endif %}">
-                  <td colspan="3" class="fw-bold">
-                    <i class="bi bi-currency-dollar me-2"></i>Dinero final ({{ encuentro.get_resultado_display }})
-                  </td>
-                  <td class="text-end fw-bold">{{ dinero_luego_de_la_apuesta }}</td>
-                </tr>
-                <tr class="table-secondary">
-                  <td colspan="4" class="small fst-italic">
-                    <i class="bi bi-calculator me-1"></i>Cálculo: 
+        
+        <!-- Pestaña de Ingresos -->
+        <div class="tab-pane fade" id="income" role="tabpanel" aria-labelledby="income-tab">
+          <div class="row">
+            <!-- Tarjeta de inversiones -->
+            <div class="col-md-6 mb-3">
+              <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-success bg-opacity-25 text-success">
+                  <h5 class="mb-0"><i class="bi bi-currency-exchange me-2"></i>Inversiones</h5>
+                </div>
+                <div class="card-body">
+                  <div class="d-flex justify-content-between mb-3">
+                    <div>
+                      <h6><i class="bi bi-cash me-2 text-success"></i>Apuesta general</h6>
+                      <small class="text-muted">Inversión base</small>
+                    </div>
+                    <div class="text-end">
+                      <h5>${{ encuentro.apuesta_general }}</h5>
+                    </div>
+                  </div>
+                  
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <h6><i class="bi bi-cash-stack me-2 text-success"></i>Apuesta por fuera</h6>
+                      <small class="text-muted">Inversión adicional</small> 
+                    </div>
+                    <div class="text-end">
+                      <h5>${{ encuentro.apuesta_por_fuera }}</h5>
+                    </div>
+                  </div>
+                  
+                  <hr>
+                  
+                  <div class="d-flex justify-content-between">
+                    <h5 class="fw-bold">Total invertido</h5>
+                    <h5 class="fw-bold">${{ todo_el_dinero_apostado }}</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Tarjeta de pollón -->
+            <div class="col-md-6 mb-3">
+              {% if encuentro.premio_mayor > 0 and encuentro.porcentaje_premio_mayor > 0 %}
+              <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-warning bg-opacity-25 text-warning">
+                  <h5 class="mb-0"><i class="bi bi-star-fill me-2"></i>Pollón</h5>
+                </div>
+                <div class="card-body">
+                  <div class="d-flex justify-content-between mb-3">
+                    <div>
+                      <h6><i class="bi bi-trophy-fill me-2 text-warning"></i>Valor del pollón</h6>
+                      <small class="text-muted">Monto total</small>
+                    </div>
+                    <div class="text-end">
+                      <h5>${{ encuentro.premio_mayor }}</h5>
+                    </div>
+                  </div>
+                  
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <h6><i class="bi bi-percent me-2"></i>Porcentaje obtenido</h6>
+                      <small class="text-muted">Del total del pollón</small>
+                    </div>
+                    <div class="text-end">
+                      <h5>{{ encuentro.porcentaje_premio_mayor }}%</h5>
+                    </div>
+                  </div>
+                  
+                  <hr>
+                  
+                  <div class="d-flex justify-content-between">
+                    <h5 class="fw-bold">Dinero del pollón</h5>
+                    <h5 class="fw-bold">${{ dinero_del_premio_mayor }}</h5>
+                  </div>
+                </div>
+              </div>
+              {% else %}
+              <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center justify-content-center text-center">
+                  <div>
+                    <i class="bi bi-star text-muted display-1"></i>
+                    <h5 class="text-muted mt-3">No hay pollón para este encuentro</h5>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+            </div>
+            
+            <!-- Tarjeta de resultado de la apuesta -->
+            <div class="col-md-12 mb-3">
+              <div class="card border-0 shadow-sm">
+                <div class="card-header {% if encuentro.resultado == 'V' %}bg-success bg-opacity-25 text-success{% elif encuentro.resultado == 'T' %}bg-warning bg-opacity-25 text-warning{% else %}bg-danger bg-opacity-25 text-danger{% endif %}">
+                  <h5 class="mb-0">
+                    <i class="bi bi-currency-exchange me-2"></i>Resultado de Apuesta: {{ encuentro.get_resultado_display }}
+                  </h5>
+                </div>
+                <div class="card-body">
+                  <div class="fw-bold mb-3">Cálculo:</div>
+                  <div class="mb-3">
                     {% if encuentro.resultado == 'V' %}
-                      Victoria: {{ todo_el_dinero_apostado }} × 2 = {{ dinero_luego_de_la_apuesta }}
+                      <div class="alert alert-success">
+                        <i class="bi bi-check-circle-fill me-2"></i>Victoria: ${{ todo_el_dinero_apostado }} × 2 = ${{ dinero_luego_de_la_apuesta }}
+                      </div>
                     {% elif encuentro.resultado == 'T' %}
-                      Tablas: {{ todo_el_dinero_apostado }} × 1 = {{ dinero_luego_de_la_apuesta }}
+                      <div class="alert alert-warning">
+                        <i class="bi bi-dash-circle-fill me-2"></i>Tablas: ${{ todo_el_dinero_apostado }} × 1 = ${{ dinero_luego_de_la_apuesta }}
+                      </div>
                     {% else %}
-                      Derrota: {{ todo_el_dinero_apostado }} × 0 = {{ dinero_luego_de_la_apuesta }}
+                      <div class="alert alert-danger">
+                        <i class="bi bi-x-circle-fill me-2"></i>Derrota: ${{ todo_el_dinero_apostado }} × 0 = ${{ dinero_luego_de_la_apuesta }}
+                      </div>
                     {% endif %}
-                    {% if encuentro.premio_mayor > 0 and encuentro.porcentaje_premio_mayor > 0 %}
-                      + {{ dinero_del_premio_mayor }} (Pollón)
-                    {% endif %}
-                  </td>
-                </tr>
-                
-                <tr class="table-danger">
-                  <td colspan="4" class="fw-bold"><i class="bi bi-graph-down-arrow me-2"></i>GASTOS</td>
-                </tr>
-                <tr>
-                  <td><i class="bi bi-clipboard-check me-2 text-danger"></i>Pactada</td>
-                  <td class="text-end">{{ encuentro.pactada }}</td>
-                  <td><i class="bi bi-person-badge me-2 text-danger"></i>Pago del Juez</td>
-                  <td class="text-end">{{ encuentro.pago_juez }}</td>
-                </tr>
-                <tr>
-                  <td colspan="3"><i class="bi bi-person-check me-2 text-danger"></i>Pago careador (15% de {{ dinero_luego_de_la_apuesta }})</td>
-                  <td class="text-end">{{ pago_careador }}</td>
-                </tr>
-                <tr class="table-light">
-                  <td colspan="3" class="fw-bold">Total de gastos</td>
-                  <td class="text-end fw-bold">{{ gastos }}</td>
-                </tr>
-                <tr class="table-secondary">
-                  <td colspan="4" class="small fst-italic">
-                    <i class="bi bi-calculator me-1"></i>Cálculo: {{ encuentro.pactada }} + {{ encuentro.pago_juez }} + {{ pago_careador }} (15% de {{ dinero_luego_de_la_apuesta }}) = {{ gastos }}
-                  </td>
-                </tr>
-                
-                <tr class="table-{% if dinero_final > 0 %}success{% else %}danger{% endif %}">
-                  <td colspan="3" class="fw-bold fs-5">
-                    <i class="bi bi-{% if dinero_final > 0 %}arrow-up-circle-fill text-success{% else %}arrow-down-circle-fill text-danger{% endif %} me-2"></i>
-                    RESULTADO FINAL ({{ encuentro.get_resultado_display }})
-                  </td>
-                  <td class="text-end fw-bold fs-5">{{ dinero_final }}</td>
-                </tr>
-                <tr class="table-secondary">
-                  <td colspan="4" class="small fst-italic">
-                    <i class="bi bi-calculator me-1"></i>Cálculo: {{ dinero_luego_de_la_apuesta }} - {{ gastos }} = {{ dinero_final }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  </div>
+                  
+                  {% if encuentro.premio_mayor > 0 and encuentro.porcentaje_premio_mayor > 0 %}
+                  <div class="fw-bold mb-2">Pollón:</div>
+                  <div class="mb-3">
+                    <div class="alert alert-warning">
+                      <i class="bi bi-trophy-fill me-2"></i>Pollón: ${{ dinero_del_premio_mayor }}
+                    </div>
+                  </div>
+                  {% endif %}
+                  
+                  <div class="d-flex justify-content-between">
+                    <h5 class="fw-bold">Total después de apuesta</h5>
+                    <h5 class="fw-bold">${{ dinero_luego_de_la_apuesta }}</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pestaña de Gastos -->
+        <div class="tab-pane fade" id="expenses" role="tabpanel" aria-labelledby="expenses-tab">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card border-0 shadow-sm">
+                <div class="card-header bg-danger bg-opacity-25 text-danger">
+                  <h5 class="mb-0"><i class="bi bi-basket3 me-2"></i>Desglose de Gastos</h5>
+                </div>
+                <div class="card-body">
+                  <div class="row g-4">
+                    <!-- Gasto: Pactada -->
+                    <div class="col-md-4">
+                      <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body text-center">
+                          <i class="bi bi-clipboard-check text-danger display-5 mb-3"></i>
+                          <h5>Pactada</h5>
+                          <div class="display-6 my-2">${{ encuentro.pactada }}</div>
+                          <div class="text-muted small">Pago acordado inicialmente</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Gasto: Juez -->
+                    <div class="col-md-4">
+                      <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body text-center">
+                          <i class="bi bi-person-badge text-danger display-5 mb-3"></i>
+                          <h5>Pago del Juez</h5>
+                          <div class="display-6 my-2">${{ encuentro.pago_juez }}</div>
+                          <div class="text-muted small">Honorario del árbitro</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Gasto: Careador -->
+                    <div class="col-md-4">
+                      <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body text-center">
+                          <i class="bi bi-person-check text-danger display-5 mb-3"></i>
+                          <h5>Pago Careador</h5>
+                          <div class="display-6 my-2">${{ pago_careador }}</div>
+                          <div class="text-muted small">15% de ${{ dinero_luego_de_la_apuesta }}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="card bg-light mt-4 border-0 shadow-sm">
+                    <div class="card-body">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="text-danger mb-0">
+                          <i class="bi bi-cash-coin me-2"></i>Total de Gastos
+                        </h4>
+                        <h4 class="text-danger mb-0">${{ gastos }}</h4>
+                      </div>
+                      <div class="small text-muted mt-2">
+                        <i class="bi bi-calculator me-1"></i>Cálculo: ${{ encuentro.pactada }} + ${{ encuentro.pago_juez }} + ${{ pago_careador }} = ${{ gastos }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pestaña de Cálculos -->
+        <div class="tab-pane fade" id="calculations" role="tabpanel" aria-labelledby="calculations-tab">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card border-0 shadow-sm">
+                <div class="card-header bg-info bg-opacity-25 text-info">
+                  <h5 class="mb-0"><i class="bi bi-calculator me-2"></i>Resumen de Cálculos</h5>
+                </div>
+                <div class="card-body">
+                  <!-- Ingresos vs Gastos -->
+                  <div class="row">
+                    <div class="col-md-6 mb-4">
+                      <div class="card bg-success bg-opacity-10 border-success h-100">
+                        <div class="card-body">
+                          <h5 class="card-title text-success mb-3">
+                            <i class="bi bi-graph-up me-2"></i>Ingresos
+                          </h5>
+                          <ul class="list-group list-group-flush mb-3">
+                            <li class="list-group-item bg-transparent d-flex justify-content-between">
+                              <span>Inversión total</span>
+                              <span>${{ todo_el_dinero_apostado }}</span>
+                            </li>
+                            {% if encuentro.resultado == 'V' %}
+                            <li class="list-group-item bg-transparent d-flex justify-content-between">
+                              <span>Multiplicador (Victoria)</span>
+                              <span>×2</span>
+                            </li>
+                            {% elif encuentro.resultado == 'T' %}
+                            <li class="list-group-item bg-transparent d-flex justify-content-between">
+                              <span>Multiplicador (Tablas)</span>
+                              <span>×1</span>
+                            </li>
+                            {% else %}
+                            <li class="list-group-item bg-transparent d-flex justify-content-between">
+                              <span>Multiplicador (Derrota)</span>
+                              <span>×0</span>
+                            </li>
+                            {% endif %}
+                            {% if encuentro.premio_mayor > 0 and encuentro.porcentaje_premio_mayor > 0 %}
+                            <li class="list-group-item bg-transparent d-flex justify-content-between">
+                              <span>Pollón</span>
+                              <span>${{ dinero_del_premio_mayor }}</span>
+                            </li>
+                            {% endif %}
+                          </ul>
+                          <div class="d-flex justify-content-between fw-bold">
+                            <h5>Total Ingresos</h5>
+                            <h5>${{ dinero_luego_de_la_apuesta }}</h5>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4">
+                      <div class="card bg-danger bg-opacity-10 border-danger h-100">
+                        <div class="card-body">
+                          <h5 class="card-title text-danger mb-3">
+                            <i class="bi bi-graph-down me-2"></i>Gastos
+                          </h5>
+                          <ul class="list-group list-group-flush mb-3">
+                            <li class="list-group-item bg-transparent d-flex justify-content-between">
+                              <span>Pactada</span>
+                              <span>${{ encuentro.pactada }}</span>
+                            </li>
+                            <li class="list-group-item bg-transparent d-flex justify-content-between">
+                              <span>Pago del juez</span>
+                              <span>${{ encuentro.pago_juez }}</span>
+                            </li>
+                            <li class="list-group-item bg-transparent d-flex justify-content-between">
+                              <span>Pago careador (15%)</span>
+                              <span>${{ pago_careador }}</span>
+                            </li>
+                          </ul>
+                          <div class="d-flex justify-content-between fw-bold">
+                            <h5>Total Gastos</h5>
+                            <h5>${{ gastos }}</h5>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Resultado final -->
+                  <div class="card bg-primary text-white border-0 shadow">
+                    <div class="card-body">
+                      <div class="row align-items-center">
+                        <div class="col-md-7">
+                          <h5 class="card-title">
+                            <i class="bi bi-wallet2 me-2"></i>Resultado Final ({{ encuentro.get_resultado_display }})
+                          </h5>
+                          <div class="mb-2">
+                            <span class="d-block">Ingresos: ${{ dinero_luego_de_la_apuesta }}</span>
+                            <span class="d-block">Gastos: ${{ gastos }}</span>
+                          </div>
+                          <div class="small opacity-75">
+                            <i class="bi bi-calculator me-1"></i>Cálculo: ${{ dinero_luego_de_la_apuesta }} - ${{ gastos }} = ${{ dinero_final }}
+                          </div>
+                        </div>
+                        <div class="col-md-5 text-end">
+                          <h2 class="mb-0">
+                            <i class="bi bi-{% if dinero_final > 0 %}arrow-up-circle-fill{% else %}arrow-down-circle-fill{% endif %} me-2"></i>
+                            ${{ dinero_final }}
+                          </h2>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
     </div>
     
     <div class="col-md-4">
@@ -261,7 +611,7 @@
                 </small>
                 {% endif %}
                 <small class="d-block mb-1">
-                  <strong>{% if encuentro.premio_mayor > 0 and encuentro.porcentaje_premio_mayor > 0 %}4{% else %}3{% endif %}.</strong> Pago careador = 15% del Dinero final
+                  <strong>{% if encuentro.premio_mayor > 0 and encuentro.porcentaje_premio_mayor > 0 %}4{% else %}3{% endif %}.</strong> Pago careador = 15% de la apuesta general + 15% del pollón
                 </small>
                 <small class="d-block">
                   <strong>{% if encuentro.premio_mayor > 0 and encuentro.porcentaje_premio_mayor > 0 %}5{% else %}4{% endif %}.</strong> Resultado final = Dinero final - (Pactada + Pago juez + Pago careador)
@@ -292,7 +642,7 @@
           </div>
           <h3 class="mb-3">{{ encuentro.gallo }}</h3>
           <div class="d-grid">
-            <a href="{% url 'ver' encuentro.gallo.nroPlaca %}" class="btn btn-outline-primary">
+            <a href="{% url 'ver' encuentro.gallo.idGallo %}" class="btn btn-outline-primary">
               <i class="bi bi-info-circle me-2"></i>Ver Detalles del Gallo
             </a>
           </div>

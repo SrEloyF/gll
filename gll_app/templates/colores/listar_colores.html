@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Colores{% endblock %}
+
+{% block content %}
+<h1>Lista de Colores</h1>
+<a href="{% url 'color_create' %}" class="btn btn-primary mb-3">Agregar Color</a>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for color in colores %}
+        <tr>
+            <td>{{ color.nombre }}</td>
+            <td>
+                <a href="{% url 'color_edit' color.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete({{ color.pk }})">Eliminar</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'index' %}" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i>Volver al listado de gallos
+</a>
+
+<a href="{% url 'crear' %}" class="btn btn-secondary mt-3">Registrar gallo</a>
+
+<script>
+    function confirmDelete(colorId) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡Esta acción no se puede deshacer!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Eliminar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Si el usuario confirma, enviar el formulario POST para eliminar el color
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '';
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = 'csrfmiddlewaretoken';
+                csrfToken.value = '{{ csrf_token }}';
+                form.appendChild(csrfToken);
+                const deleteInput = document.createElement('input');
+                deleteInput.type = 'hidden';
+                deleteInput.name = 'delete_color';
+                deleteInput.value = colorId;
+                form.appendChild(deleteInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+</script>
+
+{% endblock %}
