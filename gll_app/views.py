@@ -2,14 +2,14 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import *
 from .forms import *
 from django.contrib import messages
-from django.views.decorators.http import require_POST
 from django.http import HttpResponse
 import os
 from django.conf import settings
 import pymysql
 from django.core.paginator import Paginator
 from django.utils.timezone import now
-from datetime import datetime
+from django.db.models import ProtectedError
+from django.urls import reverse
 
 def export_db(request):
     db_settings = settings.DATABASES['default']
@@ -51,20 +51,17 @@ def export_db(request):
     finally:
         connection.close()
 
-"""
-def index(request):
-    gallos = Gallo.objects.all()
-    return render(request, 'index.html', {'gallos': gallos})
-"""
-
 def index(request):
     gallos = Gallo.objects.all()
     paginator = Paginator(gallos, 10)
-    
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
-    return render(request, 'index.html', {'page_obj': page_obj})
+    error_eliminacion = request.GET.get('error_eliminacion') == '1'
+
+    return render(request, 'index.html', {
+        'page_obj': page_obj,
+        'error_eliminacion': error_eliminacion
+    })
 
 def ver(request, idGallo):
     gallo = get_object_or_404(Gallo, idGallo=idGallo)
@@ -126,9 +123,11 @@ def editar(request, idGallo):
 
 def eliminar(request, idGallo):
     gallo = get_object_or_404(Gallo, idGallo=idGallo)
-    gallo.delete()
+    try:
+        gallo.delete()
+    except ProtectedError:
+        return redirect(f"{reverse('index')}?error_eliminacion=1")
     return redirect('index')
-
 
 #encuentros
 def crear_encuentro(request):
@@ -163,11 +162,6 @@ def crear_encuentro(request):
         'gallos': gallos
     })
 
-"""
-def listar_encuentros(request):
-    encuentros = Encuentro.objects.all().order_by('-fechaYHora')
-    return render(request, 'encuentros/listar_encuentros.html', {'encuentros': encuentros})
-"""
 
 def listar_encuentros(request):
     encuentros = Encuentro.objects.all().order_by('-fechaYHora')
@@ -177,7 +171,6 @@ def listar_encuentros(request):
     page_obj = paginator.get_page(page_number)
     
     return render(request, 'encuentros/listar_encuentros.html', {'page_obj': page_obj})
-
 
 def ver_encuentro(request, pk):
     # Obtener el encuentro con el pk proporcionado
@@ -295,23 +288,34 @@ def encuentro_form(request, pk=None):
         'encuentro': encuentro
     })
 
-@require_POST
 def eliminar_encuentro(request, pk):
     encuentro = get_object_or_404(Encuentro, pk=pk)
     encuentro.delete()
     return redirect('listar_encuentros')
 
+
 #colores
 def color_list(request):
-    # Si es una solicitud POST, se elimina el color
+    error_eliminacion = False
+
+    # Si es una solicitud POST, se intenta eliminar el color
     if request.method == 'POST' and 'delete_color' in request.POST:
         color_id = request.POST.get('delete_color')
         color = get_object_or_404(Color, pk=color_id)
-        color.delete()
+        try:
+            color.delete()
+        except ProtectedError:
+            return redirect(f"{reverse('color_list')}?error_eliminacion=1")
         return redirect('color_list')
 
+    if request.GET.get('error_eliminacion') == '1':
+        error_eliminacion = True
+
     colores = Color.objects.all()
-    return render(request, 'colores/listar_colores.html', {'colores': colores})
+    return render(request, 'colores/listar_colores.html', {
+        'colores': colores,
+        'error_eliminacion': error_eliminacion
+    })
 
 # Vista para crear un color
 def color_create(request):
@@ -336,17 +340,29 @@ def color_edit(request, pk):
         form = ColorForm(instance=color)
     return render(request, 'colores/form_color.html', {'form': form})
 
-#estados
+
+
+# estados
 def estado_list(request):
-    # Si es una solicitud POST, se elimina el estado
+    error_eliminacion = False
+
     if request.method == 'POST' and 'delete_estado' in request.POST:
         estado_id = request.POST.get('delete_estado')
         estado = get_object_or_404(Estado, pk=estado_id)
-        estado.delete()
+        try:
+            estado.delete()
+        except ProtectedError:
+            return redirect(f"{reverse('estado_list')}?error_eliminacion=1")
         return redirect('estado_list')
 
+    if request.GET.get('error_eliminacion') == '1':
+        error_eliminacion = True
+
     estados = Estado.objects.all()
-    return render(request, 'estados/listar_estados.html', {'estados': estados})
+    return render(request, 'estados/listar_estados.html', {
+        'estados': estados,
+        'error_eliminacion': error_eliminacion
+    })
 
 # Vista para crear un estado
 def estado_create(request):
@@ -372,17 +388,29 @@ def estado_edit(request, pk):
     return render(request, 'estados/form_estado.html', {'form': form})
 
 
+
+# galpones
 # Vista para listar galpones
 def galpon_list(request):
-    # Si es una solicitud POST, se elimina el galpón
+    error_eliminacion = False
+
     if request.method == 'POST' and 'delete_galpon' in request.POST:
         galpon_id = request.POST.get('delete_galpon')
         galpon = get_object_or_404(Galpon, pk=galpon_id)
-        galpon.delete()
+        try:
+            galpon.delete()
+        except ProtectedError:
+            return redirect(f"{reverse('galpon_list')}?error_eliminacion=1")
         return redirect('galpon_list')
 
+    if request.GET.get('error_eliminacion') == '1':
+        error_eliminacion = True
+
     galpones = Galpon.objects.all()
-    return render(request, 'galpones/listar_galpones.html', {'galpones': galpones})
+    return render(request, 'galpones/listar_galpones.html', {
+        'galpones': galpones,
+        'error_eliminacion': error_eliminacion
+    })
 
 # Vista para crear un galpón
 def galpon_create(request):
@@ -407,17 +435,30 @@ def galpon_edit(request, pk):
         form = GalponForm(instance=galpon)
     return render(request, 'galpones/form_galpon.html', {'form': form})
 
+
+
 # dueños
 # Vista para listar los dueños
 def dueno_list(request):
+    error_eliminacion = False
+
     if request.method == 'POST' and 'delete_dueno' in request.POST:
         dueno_id = request.POST.get('delete_dueno')
         dueno = get_object_or_404(Dueno, pk=dueno_id)
-        dueno.delete()
+        try:
+            dueno.delete()
+        except ProtectedError:
+            return redirect(f"{reverse('dueno_list')}?error_eliminacion=1")
         return redirect('dueno_list')
 
+    if request.GET.get('error_eliminacion') == '1':
+        error_eliminacion = True
+
     duenos = Dueno.objects.all()
-    return render(request, 'duenos_eventos/listar_duenos.html', {'duenos': duenos})
+    return render(request, 'duenos_eventos/listar_duenos.html', {
+        'duenos': duenos,
+        'error_eliminacion': error_eliminacion
+    })
 
 # Vista para crear un dueño
 def dueno_create(request):

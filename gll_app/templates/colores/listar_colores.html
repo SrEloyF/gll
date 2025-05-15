@@ -31,6 +31,17 @@
 
 <a href="{% url 'crear' %}" class="btn btn-secondary mt-3">Registrar gallo</a>
 
+{% if error_eliminacion %}
+    <script>
+    Swal.fire({
+      icon: 'error',
+      title: 'No se puede eliminar',
+      text: 'Este registro está relacionado con otro registro.',
+      confirmButtonText: 'Entendido'
+    });
+  </script>
+{% endif %}
+
 <script>
     function confirmDelete(colorId) {
         Swal.fire({

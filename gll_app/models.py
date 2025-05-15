@@ -11,7 +11,7 @@ def imagen_upload_path(instance, filename):
 def imagen_upload_path_encuentros(instance, filename):
     base, ext = os.path.splitext(filename)
     timestamp = int(time.time())
-    return f"media/videos/encuentros/{timestamp}_{base}{ext}"
+    return f"encuentros/{timestamp}_{base}{ext}"
 
 class Color(models.Model):
     nombre = models.CharField(max_length=100, unique=True)

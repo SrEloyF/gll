@@ -359,11 +359,10 @@
 </div>
 
 <script>
-  // Confirmar eliminación con SweetAlert
   function confirmarEliminacion(idEncuentro) {
     Swal.fire({
       title: '¿Estás seguro?',
-      text: "Esta acción no se puede deshacer",
+      text: "No se podrá recuperar el registro",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
@@ -372,7 +371,7 @@
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        window.location.href = `{% url 'eliminar_encuentro' 0 %}`.replace('0', idEncuentro);
+        window.location.href = `/encuentros/eliminar/${idEncuentro}`;
       }
     });
   }
