@@ -72,7 +72,7 @@ class ColorForm(forms.ModelForm):
         model = Color
         fields = ['nombre']
         widgets = {
-            'nombre': forms.TextInput(attrs={'class': 'form-control ', 'placeholder': 'Nombre del color'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del color'}),
         }
 
 class EstadoForm(forms.ModelForm):
