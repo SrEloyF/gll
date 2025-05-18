@@ -23,11 +23,25 @@
             <div class="form-floating mb-3">
               {{ form.nroPlaca }}
               <label for="{{ form.nroPlaca.id_for_label }}">Número de Placa</label>
+
+              {# Error container siempre presente, inicialmente oculto #}
+              <div id="placa-error" class="invalid-feedback" style="display: none;"></div>
+
               {% if form.nroPlaca.errors %}
-              <div class="invalid-feedback d-block">{{ form.nroPlaca.errors }}</div>
+                {# Si ya venían errores del servidor, los volcamos dentro #}
+                <script>
+                  document.addEventListener('DOMContentLoaded', () => {
+                    const errDiv = document.getElementById('placa-error');
+                    errDiv.textContent = '{{ form.nroPlaca.errors.as_text|escapejs }}';
+                    errDiv.style.display = 'block';
+                    document.getElementById('id_nroPlaca').classList.add('is-invalid');
+                  });
+                </script>
               {% endif %}
             </div>
           </div>
+
+
 
           <div class="col-md-6">
             <div class="form-floating mb-3">
@@ -44,10 +58,20 @@
               {{ form.color }}
               <label for="{{ form.color.id_for_label }}">Color</label>
               {% if form.color.errors %}
-              <div class="invalid-feedback d-block">{{ form.color.errors }}</div>
+                <div class="invalid-feedback d-block">{{ form.color.errors }}</div>
               {% endif %}
+              
+              <div class="position-absolute end-0 top-0 d-flex mt-2 me-2">
+                <div class="input-group-text">
+                  <i class="bi bi-palette text-primary"></i>
+                </div>
+                <button class="btn btn-success ms-2" id="btnAniadirColor" type="button">
+                  <i class="bi bi-plus text-white"></i>
+                </button>
+              </div>
             </div>
           </div>
+
 
           <div class="col-md-4">
             <div class="form-floating mb-3">
@@ -72,7 +96,7 @@
           <div class="col-md-6">
             <div class="form-floating mb-3">
               {{ form.peso }}
-              <label for="{{ form.peso.id_for_label }}">Peso (kg)</label>
+              <label for="{{ form.peso.id_for_label }}">Peso (libras)</label>
               {% if form.peso.errors %}
               <div class="invalid-feedback d-block">{{ form.peso.errors }}</div>
               {% endif %}
@@ -94,20 +118,41 @@
               {{ form.nombreDuenoAnterior }}
               <label for="{{ form.nombreDuenoAnterior.id_for_label }}">Nombre del Dueño Anterior</label>
               {% if form.nombreDuenoAnterior.errors %}
-              <div class="invalid-feedback d-block">{{ form.nombreDuenoAnterior.errors }}</div>
+                <div class="invalid-feedback d-block">{{ form.nombreDuenoAnterior.errors }}</div>
               {% endif %}
+
+              <div class="position-absolute end-0 top-0 d-flex mt-2 me-2">
+                <div class="input-group-text">
+                  <i class="bi bi-person-fill text-primary"></i>
+                </div>
+                <button class="btn btn-success ms-2" id="btnAniadirDuenoAnterior" type="button">
+                  <i class="bi bi-plus text-white"></i>
+                </button>
+              </div>
             </div>
           </div>
 
+
           <div class="col-md-6">
-            <div class="form-floating mb-3">
+            <div class="form-floating position-relative mb-3">
               {{ form.estadoDeSalud }}
               <label for="{{ form.estadoDeSalud.id_for_label }}">Estado de Salud</label>
+
               {% if form.estadoDeSalud.errors %}
-              <div class="invalid-feedback d-block">{{ form.estadoDeSalud.errors }}</div>
+                <div class="invalid-feedback d-block">{{ form.estadoDeSalud.errors }}</div>
               {% endif %}
+
+              <div class="position-absolute end-0 top-0 d-flex mt-2 me-2">
+                <div class="input-group-text">
+                  <i class="bi bi-bandaid text-primary"></i>
+                </div>
+                <button class="btn btn-success ms-2" id="btnAniadirEstado" type="button">
+                  <i class="bi bi-plus text-white"></i>
+                </button>
+              </div>
             </div>
           </div>
+
 
           <div class="col-md-6">
             <div class="form-floating mb-3">
@@ -197,22 +242,27 @@
           </div>
         </div>
 
-        <div class="d-flex justify-content-between mt-4">
-          <a href="{% url 'index' %}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Volver al listado de gallos
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center align-items-md-start gap-3 mt-4">
+          <a href="{% url 'index' %}" class="btn btn-outline-secondary order-1 order-md-0">
+            <i class="bi bi-arrow-left me-1"></i>Volver al listado de gallos
           </a>
-          <div>
-            <a href="{% url 'estado_create' %}" class="btn btn-danger px-4 me-2">
+        
+          <div class="d-flex flex-column flex-md-row gap-2 order-0 order-md-1">
+            <a href="{% url 'duenoanterior_create' %}" class="btn btn-info">
+              <i class="bi bi-clipboard2-plus me-1"></i>Registrar dueños anteriores
+            </a>
+            <a href="{% url 'estado_create' %}" class="btn btn-danger">
               <i class="bi bi-clipboard2-plus me-1"></i>Registrar estados
             </a>
-            <a href="{% url 'color_create' %}" class="btn btn-warning px-4 me-2">
+            <a href="{% url 'color_create' %}" class="btn btn-warning">
               <i class="bi bi-palette me-1"></i>Registrar colores
             </a>
-            <button type="submit" class="btn btn-success px-4">
-              <i class="bi bi-save me-1"></i> Guardar Registro
+            <button type="submit" class="btn btn-success" id="submit-btn">
+              <i class="bi bi-save me-1"></i>Guardar Registro
             </button>
           </div>
         </div>
+
       </form>
     </div>
   </div>
@@ -319,6 +369,9 @@
 </div>
 
 <script>
+
+  document.getElementById('{{ form.nombre_img.id_for_label }}').classList.add('form-control');
+
   // Inicialización de validación de Bootstrap
   (() => {
     'use strict';
@@ -333,6 +386,208 @@
       }, false);
     });
   })();
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+  const inputPlaca = document.getElementById('id_nroPlaca');
+  const errDiv     = document.getElementById('placa-error');
+  const submitBtn  = document.getElementById('submit-btn');
+
+  inputPlaca.addEventListener('blur', function() {
+    const placa = this.value.trim();
+    if (!placa) {
+      this.classList.remove('is-invalid');
+      errDiv.textContent = '';
+      errDiv.style.display = 'none';
+      submitBtn.disabled = false;
+      return;
+    }
+
+    fetch('{% url "ajax_valida_placa" %}?placa=' + encodeURIComponent(placa))
+      .then(res => res.json())
+      .then(data => {
+        if (data.exists) {
+          this.classList.add('is-invalid');
+          errDiv.textContent = 'La placa ya está registrada.';
+          errDiv.style.display = 'block';
+          submitBtn.disabled = true;
+        } else {
+          this.classList.remove('is-invalid');
+          errDiv.textContent = '';
+          errDiv.style.display = 'none';
+          submitBtn.disabled = false;
+        }
+      })
+      .catch(err => {
+        console.error('Error en la validación AJAX:', err);
+        submitBtn.disabled = true;
+      });});
+
+
+  function añadirEstado(selectId) {
+    Swal.fire({
+      title: 'Ingresa nuevo estado:',
+      input: 'text',
+      inputPlaceholder: 'Introduce el nombre aquí',
+      showCancelButton: true,
+      confirmButtonText: 'Registrar',
+      cancelButtonText: 'Cancelar',
+      preConfirm: (inputValue) => {
+        if (!inputValue) {
+          Swal.showValidationMessage('¡Por favor, ingresa algo!');
+        }
+        return inputValue;
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const nombre = result.value;
+
+        fetch("{% url 'estado_create_ajax' %}", {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+          },
+          body: new URLSearchParams({
+            'nombre': nombre,
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const selectEstado = document.getElementById(selectId);
+            const nuevaOpcionEstado = document.createElement('option');
+            nuevaOpcionEstado.value = data.id;
+            nuevaOpcionEstado.textContent = data.nombre;
+            selectEstado.appendChild(nuevaOpcionEstado);
+            nuevaOpcionEstado.selected = true;
+            Swal.fire('¡Éxito!', 'Estado registrado correctamente.', 'success');
+          } else {
+            Swal.fire('Error', data.error || 'No se pudo registrar.', 'error');
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          Swal.fire('Error', 'Error en la petición.', 'error');
+        });
+      }
+    });
+  }
+
+  function añadirColor(selectId) {
+    Swal.fire({
+      title: 'Ingresa nuevo color:',
+      input: 'text',
+      inputPlaceholder: 'Introduce el nombre aquí',
+      showCancelButton: true,
+      confirmButtonText: 'Registrar',
+      cancelButtonText: 'Cancelar',
+      preConfirm: (inputValue) => {
+        if (!inputValue) {
+          Swal.showValidationMessage('¡Por favor, ingresa algo!');
+        }
+        return inputValue;
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const nombre = result.value;
+
+        fetch("{% url 'color_create_ajax' %}", {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+          },
+          body: new URLSearchParams({
+            'nombre': nombre,
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const selectColor = document.getElementById(selectId);
+            const nuevaOpcionColor = document.createElement('option');
+            nuevaOpcionColor.value = data.id;
+            nuevaOpcionColor.textContent = data.nombre;
+            selectColor.appendChild(nuevaOpcionColor);
+            nuevaOpcionColor.selected = true;
+
+            Swal.fire('¡Éxito!', 'Color registrado correctamente.', 'success');
+          } else {
+            Swal.fire('Error', data.error || 'No se pudo registrar.', 'error');
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          Swal.fire('Error', 'Error en la petición.', 'error');
+        });
+      }
+    });
+  }
+
+  function añadirDuenoAnterior(selectId) {
+    Swal.fire({
+      title: 'Ingresa nombre del dueño anterior:',
+      input: 'text',
+      inputPlaceholder: 'Introduce el nombre aquí',
+      showCancelButton: true,
+      confirmButtonText: 'Registrar',
+      cancelButtonText: 'Cancelar',
+      preConfirm: (inputValue) => {
+        if (!inputValue) {
+          Swal.showValidationMessage('¡Por favor, ingresa algo!');
+        }
+        return inputValue;
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const nombre = result.value;
+
+        fetch("{% url 'duenoanterior_create_ajax' %}", {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+          },
+          body: new URLSearchParams({
+            'nombre': nombre,
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const selectDuenoAnterior = document.getElementById(selectId);
+
+            const nuevaOpcionDuenoAnterior = document.createElement('option');
+            nuevaOpcionDuenoAnterior.value = data.id;
+            nuevaOpcionDuenoAnterior.textContent = data.nombre;
+
+            selectDuenoAnterior.appendChild(nuevaOpcionDuenoAnterior);
+            nuevaOpcionDuenoAnterior.selected = true;
+
+            Swal.fire('¡Éxito!', 'Dueño anterior registrado correctamente.', 'success');
+          } else {
+            Swal.fire('Error', data.error || 'No se pudo registrar.', 'error');
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          Swal.fire('Error', 'Error en la petición.', 'error');
+        });
+      }
+    });
+  }
+
+  document.getElementById('btnAniadirDuenoAnterior').addEventListener('click', function () {
+    añadirDuenoAnterior('id_nombreDuenoAnterior');
+  });
+
+  document.getElementById('btnAniadirColor').addEventListener('click', function () {
+    añadirColor('id_color');
+  });
+
+  document.getElementById('btnAniadirEstado').addEventListener('click', function () {
+    añadirEstado('id_estadoDeSalud');
+  });
+
+  });
 
   // Quitar Padre
   document.getElementById('quitarPadre')?.addEventListener('click', () => {
@@ -380,7 +635,5 @@
     };
   });
 
-  // Mejora visual para el input de archivo
-  document.getElementById('{{ form.nombre_img.id_for_label }}').classList.add('form-control');
 </script>
 {% endblock %}

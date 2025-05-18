@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 
-{% block title %}Lista de Estados{% endblock %}
+{% block title %}Lista de Dueños Anteriores{% endblock %}
 
 {% block content %}
 <div class="card shadow-sm border-0">
     <div class="card-header bg-white d-flex justify-content-between align-items-center border-bottom">
         <h1 class="h4 mb-0">
-            <i class="bi-list-check me-2"></i>Lista de Estados
+            <i class="bi-person-circle me-2"></i>Lista de Dueños Anteriores
         </h1>
-        <a href="{% url 'estado_create' %}" class="btn btn-primary btn-sm">
-            <i class="bi-plus-lg me-1"></i>Agregar Estado
+        <a href="{% url 'duenoanterior_create' %}" class="btn btn-primary btn-sm">
+            <i class="bi-plus-lg me-1"></i>Agregar Dueño Anterior
         </a>
     </div>
     
@@ -23,18 +23,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for estado in estados %}
+                    {% for duenoanterior in duenosanteriores %}
                     <tr>
-                        <td class="ps-3 align-middle">{{ estado.nombre }}</td>
+                        <td class="ps-3 align-middle">{{ duenoanterior.nombre }}</td>
                         <td class="text-center align-middle">
                             <div class="d-flex gap-1 justify-content-center">
-                                <a href="{% url 'estado_edit' estado.pk %}" 
+                                <a href="{% url 'duenoanterior_edit' duenoanterior.pk %}" 
                                    class="btn btn-outline-warning btn-sm"
                                    title="Editar">
                                     <i class="bi-pencil"></i>
                                 </a>
                                 <button class="btn btn-outline-danger btn-sm" 
-                                        onclick="confirmDelete({{ estado.pk }})"
+                                        onclick="confirmDelete({{ duenoanterior.pk }})"
                                         title="Eliminar">
                                     <i class="bi-trash"></i>
                                 </button>
@@ -47,7 +47,6 @@
         </div>
     </div>
 </div>
-
 <div class="d-flex justify-content-between mt-3">
     <a href="{% url 'index' %}" class="btn btn-outline-secondary btn-sm">
         <i class="bi-arrow-left me-1"></i>Volver al listado de gallos
@@ -58,17 +57,17 @@
 </div>
 {% if error_eliminacion %}
     <script>
-    Swal.fire({
-      icon: 'error',
-      title: 'No se puede eliminar',
-      text: 'Este registro está relacionado con otro registro.',
-      confirmButtonText: 'Entendido'
-    });
-  </script>
+        Swal.fire({
+            icon: 'error',
+            title: 'No se puede eliminar',
+            text: 'Este registro está relacionado con otro registro.',
+            confirmButtonText: 'Entendido'
+        });
+    </script>
 {% endif %}
 
 <script>
-    function confirmDelete(estadoId) {
+    function confirmDelete(duenoanteriorId) {
         Swal.fire({
             title: '¿Estás seguro?',
             text: "¡Esta acción no se puede deshacer!",
@@ -89,8 +88,8 @@
                 form.appendChild(csrfToken);
                 const deleteInput = document.createElement('input');
                 deleteInput.type = 'hidden';
-                deleteInput.name = 'delete_estado';
-                deleteInput.value = estadoId;
+                deleteInput.name = 'delete_duenoanterior';
+                deleteInput.value = duenoanteriorId;
                 form.appendChild(deleteInput);
                 document.body.appendChild(form);
                 form.submit();

@@ -67,21 +67,33 @@
         <div class="row g-3 mb-3">
 
           <div class="col-md-6">
-            <div class="form-floating">
+            <div class="form-floating position-relative">
               {{ form.galpon1 }}
-              {{ form.galpon1.label_tag }}
-              <div class="input-group-text position-absolute end-0 top-0 mt-2 me-2">
-                <i class="bi bi-house text-primary"></i>
+              <label for="{{ form.galpon1.id_for_label }}">Galpón 1:</label>
+              
+              <div class="position-absolute end-0 top-0 d-flex mt-2 me-2">
+                <div class="input-group-text">
+                  <i class="bi bi-house text-primary"></i>
+                </div>
+                <button class="btn btn-success ms-2" id="btnAniadirGalpon1" type="button">
+                  <i class="bi bi-plus text-white"></i>
+                </button>
               </div>
             </div>
           </div>
 
           <div class="col-md-6">
-            <div class="form-floating">
+            <div class="form-floating position-relative">
               {{ form.galpon2 }}
-              {{ form.galpon2.label_tag }}
-              <div class="input-group-text position-absolute end-0 top-0 mt-2 me-2">
-                <i class="bi bi-house-door text-primary"></i>
+              <label for="{{ form.galpon1.id_for_label }}">Galpón 1:</label>
+              
+              <div class="position-absolute end-0 top-0 d-flex mt-2 me-2">
+                <div class="input-group-text">
+                  <i class="bi bi-house text-primary"></i>
+                </div>
+                <button class="btn btn-success ms-2" id="btnAniadirGalpon2" type="button">
+                  <i class="bi bi-plus text-white"></i>
+                </button>
               </div>
             </div>
           </div>
@@ -165,30 +177,44 @@
               {{ form.resultado.label }}
             </label>
           </div>
+          
           <div class="col-md-4">
-            <div class="input-group">
-              <span class="input-group-text bg-light"><i class="bi bi-bandaid"></i></span>
+            <div class="form-floating position-relative">
               {{ form.condicionGallo }}
+              <label for="{{ form.condicionGallo.id_for_label }}">Condición del gallo luego del encuentro</label>
+              
+              <div class="position-absolute end-0 top-0 d-flex mt-2 me-2">
+                <div class="input-group-text">
+                  <i class="bi bi-bandaid text-primary"></i>
+                </div>
+                <button class="btn btn-success ms-2" id="btnAniadirEstado" type="button">
+                  <i class="bi bi-plus text-white"></i>
+                </button>
+              </div>
             </div>
-            <label for="{{ form.condicionGallo.id_for_label }}" class="form-label">
-              Condición del gallo luego del encuentro
-            </label>
           </div>
 
           <div class="col-md-4">
-            <div class="input-group">
-              <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+            <div class="form-floating position-relative">
               {{ form.duenoEvento }}
+              <label for="{{ form.duenoEvento.id_for_label }}">Dueño del evento</label>
+              
+              <div class="position-absolute end-0 top-0 d-flex mt-2 me-2">
+                <div class="input-group-text">
+                  <i class="bi bi-person text-primary"></i>
+                </div>
+                <button class="btn btn-success ms-2" id="btnAniadirDueno" type="button">
+                  <i class="bi bi-plus text-white"></i>
+                </button>
+              </div>
             </div>
-            <label for="{{ form.duenoEvento.id_for_label }}" class="form-label">
-              </i>Dueño del evento
-            </label>
           </div>
+
         </div>
 
 <div class="col-md-6">
   <label for="{{ form.imagen_evento.id_for_label }}" class="form-label">
-    <i class="bi bi-image me-1"></i>Imagen del evento (Opcional)
+    <i class="bi bi-image me-1"></i>Imagen principal del evento (Opcional)
   </label>
 
   <div class="input-group">
@@ -354,16 +380,20 @@
 
         </div>
 
-        <div class="d-flex justify-content-between mt-4">
-          <a href="{% url 'listar_encuentros' %}" class="btn btn-outline-secondary me-2">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center align-items-md-start gap-3 mt-4">
+          <a href="{% url 'listar_encuentros' %}" class="btn btn-outline-secondary order-1 order-md-0">
             <i class="bi bi-arrow-left me-1"></i>Volver al listado de encuentros
           </a>
-          <div>
-            <a href="{% url 'dueno_create' %}" class="btn btn-info px-4 me-2">
-              <i class="bi bi-house me-1"></i>Registrar dueños de eventos
+        
+          <div class="d-flex flex-column flex-md-row gap-2 order-0 order-md-1">
+            <a href="{% url 'dueno_create' %}" class="btn btn-info">
+              <i class="bi bi-house me-1"></i>Registrar dueños
             </a>
-            <a href="{% url 'galpon_create' %}" class="btn btn-warning px-4 me-2">
+            <a href="{% url 'galpon_create' %}" class="btn btn-warning">
               <i class="bi bi-house me-1"></i>Registrar galpones
+            </a>
+            <a href="{% url 'estado_create' %}" class="btn btn-danger">
+              <i class="bi bi-clipboard2-plus me-1"></i>Registrar estados
             </a>
             <button type="submit" class="btn btn-success">
               <i class="bi bi-save me-1"></i>Guardar Encuentro
@@ -430,6 +460,199 @@
 </div>
 
 <script>
+
+document.addEventListener('DOMContentLoaded', function () {
+
+  // Función genérica para añadir un nuevo galpón
+  function añadirGalpon(selectId) {
+    Swal.fire({
+      title: 'Ingresa nuevo galpón:',
+      input: 'text',
+      inputPlaceholder: 'Introduce el nombre aquí',
+      showCancelButton: true,
+      confirmButtonText: 'Registrar',
+      cancelButtonText: 'Cancelar',
+      preConfirm: (inputValue) => {
+        if (!inputValue) {
+          Swal.showValidationMessage('¡Por favor, ingresa algo!');
+        }
+        return inputValue;
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const nombre = result.value;
+
+        fetch("{% url 'galpon_create_ajax' %}", {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+          },
+          body: new URLSearchParams({
+            'nombre': nombre,
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const selectGalpon = document.getElementById(selectId);
+            const otroSelectId = (selectId === 'id_galpon1') ? 'id_galpon2' : 'id_galpon1';
+            const otroSelect = document.getElementById(otroSelectId);
+
+            // Crear la nueva opción
+            const nuevaOpcionGalpon = document.createElement('option');
+            nuevaOpcionGalpon.value = data.id;
+            nuevaOpcionGalpon.textContent = data.nombre;
+
+            // Añadir la nueva opción al select correspondiente
+            selectGalpon.appendChild(nuevaOpcionGalpon);
+
+            // Añadir la nueva opción al otro select
+            const nuevaOpcionOtroGalpon = nuevaOpcionGalpon.cloneNode(true);
+            otroSelect.appendChild(nuevaOpcionOtroGalpon);
+
+            // Seleccionar la nueva opción solo en el select correspondiente
+            nuevaOpcionGalpon.selected = true;
+
+            Swal.fire('¡Éxito!', 'Galpón registrado correctamente.', 'success');
+          } else {
+            Swal.fire('Error', data.error || 'No se pudo registrar.', 'error');
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          Swal.fire('Error', 'Error en la petición.', 'error');
+        });
+      }
+    });
+  }
+
+  function añadirEstado(selectId) {
+    Swal.fire({
+      title: 'Ingresa nuevo estado:',
+      input: 'text',
+      inputPlaceholder: 'Introduce el nombre aquí',
+      showCancelButton: true,
+      confirmButtonText: 'Registrar',
+      cancelButtonText: 'Cancelar',
+      preConfirm: (inputValue) => {
+        if (!inputValue) {
+          Swal.showValidationMessage('¡Por favor, ingresa algo!');
+        }
+        return inputValue;
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const nombre = result.value;
+
+        fetch("{% url 'estado_create_ajax' %}", {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+          },
+          body: new URLSearchParams({
+            'nombre': nombre,
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const selectEstado = document.getElementById(selectId);
+
+            // Crear la nueva opción para el select de estado
+            const nuevaOpcionEstado = document.createElement('option');
+            nuevaOpcionEstado.value = data.id;
+            nuevaOpcionEstado.textContent = data.nombre;
+
+            // Añadir la nueva opción al select
+            selectEstado.appendChild(nuevaOpcionEstado);
+
+            // Seleccionar la nueva opción
+            nuevaOpcionEstado.selected = true;
+
+            Swal.fire('¡Éxito!', 'Estado registrado correctamente.', 'success');
+          } else {
+            Swal.fire('Error', data.error || 'No se pudo registrar.', 'error');
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          Swal.fire('Error', 'Error en la petición.', 'error');
+        });
+      }
+    });
+  }
+
+  function añadirDueno(selectId) {
+    Swal.fire({
+      title: 'Ingresa nuevo dueño:',
+      input: 'text',
+      inputPlaceholder: 'Introduce el nombre aquí',
+      showCancelButton: true,
+      confirmButtonText: 'Registrar',
+      cancelButtonText: 'Cancelar',
+      preConfirm: (inputValue) => {
+        if (!inputValue) {
+          Swal.showValidationMessage('¡Por favor, ingresa algo!');
+        }
+        return inputValue;
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const nombre = result.value;
+
+        fetch("{% url 'dueno_create_ajax' %}", {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+          },
+          body: new URLSearchParams({
+            'nombre': nombre,
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const selectDueno = document.getElementById(selectId);
+
+            // Crear la nueva opción para el select de dueño
+            const nuevaOpcionDueno = document.createElement('option');
+            nuevaOpcionDueno.value = data.id;
+            nuevaOpcionDueno.textContent = data.nombre;
+
+            selectDueno.appendChild(nuevaOpcionDueno);
+
+            nuevaOpcionDueno.selected = true;
+
+            Swal.fire('¡Éxito!', 'Dueño registrado correctamente.', 'success');
+          } else {
+            Swal.fire('Error', data.error || 'No se pudo registrar.', 'error');
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          Swal.fire('Error', 'Error en la petición.', 'error');
+        });
+      }
+    });
+  }
+
+  document.getElementById('btnAniadirDueno').addEventListener('click', function () {
+    añadirDueno('id_duenoEvento');
+  });
+
+  document.getElementById('btnAniadirEstado').addEventListener('click', function () {
+    añadirEstado('id_condicionGallo');
+  });
+
+  document.getElementById('btnAniadirGalpon1').addEventListener('click', function () {
+    añadirGalpon('id_galpon1');
+  });
+
+  document.getElementById('btnAniadirGalpon2').addEventListener('click', function () {
+    añadirGalpon('id_galpon2');
+  });
+
+});
 
   const arregloDeInputs = ['id_pactada', 'id_apuesta_general', 'id_pago_juez', 'id_apuesta_por_fuera', 'id_premio_mayor', 'id_porcentaje_premio_mayor']
   arregloDeInputs.forEach(inputId => {
@@ -538,10 +761,10 @@
 
   // bloquear inputs de premio mayor y porcentaje
   const selectResultado = document.getElementById('id_resultado');
-  const inputs = ['id_premio_mayor', 'id_porcentaje_premio_mayor'];
+  const inputsABloquear = ['id_premio_mayor', 'id_porcentaje_premio_mayor', 'id_pago_juez'];
 
   function limpiarYBloquearInputs() {
-    inputs.forEach(id => {
+    inputsABloquear.forEach(id => {
       const input = document.getElementById(id);
       input.value = '';
       input.disabled = true;
@@ -551,7 +774,7 @@
 
 
   function habilitarInputs() {
-    inputs.forEach(id => {
+    inputsABloquear.forEach(id => {
       const input = document.getElementById(id);
       input.disabled = false;
       input.style.backgroundColor = '';

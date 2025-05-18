@@ -32,6 +32,11 @@ class Dueno(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     def __str__(self):
         return self.nombre
+    
+class DuenoAnterior(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+    def __str__(self):
+        return self.nombre
 
 class Gallo(models.Model):
     idGallo = models.AutoField(primary_key=True)
@@ -47,7 +52,7 @@ class Gallo(models.Model):
 
     peso = models.DecimalField(decimal_places=2, default=0, max_digits=10, validators=[MinValueValidator(0)])
     nroPlacaAnterior = models.IntegerField(null=True, blank=True)
-    nombreDuenoAnterior = models.CharField(max_length=100, null=True, blank=True)
+    nombreDuenoAnterior = models.ForeignKey(DuenoAnterior, on_delete=models.PROTECT, null=True)
     estadoDeSalud = models.ForeignKey(Estado, on_delete=models.PROTECT)
     fechaMuerte = models.DateField(null=True, blank=True)
 
@@ -71,7 +76,7 @@ class Encuentro(models.Model):
         ('D', 'Derrota')
     ])
     video = models.FileField(upload_to=imagen_upload_path, null=True)
-    condicionGallo = models.CharField(max_length=100, null=True)
+    condicionGallo = models.ForeignKey(Estado, on_delete=models.PROTECT)
     duenoEvento = models.ForeignKey(Dueno, on_delete=models.PROTECT)
     imagen_evento = models.ImageField(upload_to=imagen_upload_path_encuentros, null=True)
 

@@ -7,9 +7,11 @@ import os
 from django.conf import settings
 import pymysql
 from django.core.paginator import Paginator
-from django.utils.timezone import now
 from django.db.models import ProtectedError
 from django.urls import reverse
+from datetime import datetime
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 def export_db(request):
     db_settings = settings.DATABASES['default']
@@ -62,13 +64,41 @@ def index(request):
         'page_obj': page_obj,
         'error_eliminacion': error_eliminacion
     })
-
+"""
 def ver(request, idGallo):
     gallo = get_object_or_404(Gallo, idGallo=idGallo)
     edadGallo = now().date() - gallo.fechaNac
     edadGallo = edadGallo.days / 365
     edadGallo = round(edadGallo, 1)
     return render(request, 'ver.html', {'gallo': gallo, 'edadGallo': edadGallo})
+"""
+
+def ver(request, idGallo):
+    gallo = get_object_or_404(Gallo, idGallo=idGallo)
+    hoy = datetime.now().date()
+    edadGallo = hoy - gallo.fechaNac
+    
+    anios = edadGallo.days // 365
+    meses = (edadGallo.days % 365) // 30
+    dias = (edadGallo.days % 365) % 30
+    
+    edad_texto = []
+    
+    if anios > 0:
+        edad_texto.append(f"{anios} {'año' if anios == 1 else 'años'}")
+    
+    if meses > 0:
+        edad_texto.append(f"{meses} {'mes' if meses == 1 else 'meses'}")
+    
+    if dias > 0:
+        edad_texto.append(f"{dias} {'día' if dias == 1 else 'días'}")
+    
+    if anios > 0:
+        total_meses = anios * 12 + meses
+        edad_texto.append(f"({total_meses} {'mes' if total_meses == 1 else 'meses'})")
+    edad_str = ', '.join(edad_texto)
+    
+    return render(request, 'ver.html', {'gallo': gallo, 'edadGallo': edad_str})
 
 def crear(request):
     if request.method == 'POST':
@@ -91,6 +121,11 @@ def crear(request):
     else:
         form = GalloForm()
     return render(request, 'formulario.html', {'form': form, 'gallos': Gallo.objects.exclude(nroPlaca=form.instance.nroPlaca if form.instance else None)})
+
+def ajax_valida_placa(request):
+    placa = request.GET.get('placa', None)
+    exists = Gallo.objects.filter(nroPlaca=placa).exists() if placa else False
+    return JsonResponse({'exists': exists})
 
 def editar(request, idGallo):
     gallo = get_object_or_404(Gallo, idGallo=idGallo)
@@ -328,6 +363,18 @@ def color_create(request):
         form = ColorForm()
     return render(request, 'colores/form_color.html', {'form': form})
 
+@csrf_exempt
+def color_create_ajax(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        if not nombre:
+            return JsonResponse({'error': 'El nombre es requerido.'}, status=400)
+        if Color.objects.filter(nombre=nombre).exists():
+            return JsonResponse({'error': 'Ya existe un color con ese nombre.'}, status=400)
+        color = Color.objects.create(nombre=nombre)
+        return JsonResponse({'success': True, 'id': color.id, 'nombre': color.nombre})
+    return JsonResponse({'error': 'Método no permitido.'}, status=405)
+
 # Vista para editar un color
 def color_edit(request, pk):
     color = get_object_or_404(Color, pk=pk)
@@ -374,6 +421,18 @@ def estado_create(request):
     else:
         form = EstadoForm()
     return render(request, 'estados/form_estado.html', {'form': form})
+
+@csrf_exempt
+def estado_create_ajax(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        if not nombre:
+            return JsonResponse({'error': 'El nombre es requerido.'}, status=400)
+        if Estado.objects.filter(nombre=nombre).exists():
+            return JsonResponse({'error': 'Ya existe un estado con ese nombre.'}, status=400)
+        estado = Estado.objects.create(nombre=nombre)
+        return JsonResponse({'success': True, 'id': estado.id, 'nombre': estado.nombre})
+    return JsonResponse({'error': 'Método no permitido.'}, status=405)
 
 # Vista para editar un estado
 def estado_edit(request, pk):
@@ -423,6 +482,22 @@ def galpon_create(request):
         form = GalponForm()
     return render(request, 'galpones/form_galpon.html', {'form': form})
 
+# Vista para crear un galpón con ajax
+@csrf_exempt
+def galpon_create_ajax(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        if not nombre:
+            return JsonResponse({'error': 'El nombre es requerido.'}, status=400)
+
+        # Verificar si ya existe
+        if Galpon.objects.filter(nombre=nombre).exists():
+            return JsonResponse({'error': 'Ya existe un galpón con ese nombre.'}, status=400)
+
+        galpon = Galpon.objects.create(nombre=nombre)
+        return JsonResponse({'success': True, 'id': galpon.id, 'nombre': galpon.nombre})
+    return JsonResponse({'error': 'Método no permitido.'}, status=405)
+
 # Vista para editar un galpón
 def galpon_edit(request, pk):
     galpon = get_object_or_404(Galpon, pk=pk)
@@ -471,6 +546,18 @@ def dueno_create(request):
         form = DuenoForm()
     return render(request, 'duenos_eventos/form_dueno.html', {'form': form})
 
+@csrf_exempt
+def dueno_create_ajax(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        if not nombre:
+            return JsonResponse({'error': 'El nombre es requerido.'}, status=400)
+        if Dueno.objects.filter(nombre=nombre).exists():
+            return JsonResponse({'error': 'Ya existe un dueño con ese nombre.'}, status=400)
+        dueno = Dueno.objects.create(nombre=nombre)
+        return JsonResponse({'success': True, 'id': dueno.id, 'nombre': dueno.nombre})
+    return JsonResponse({'error': 'Método no permitido.'}, status=405)
+
 # Vista para editar un dueño
 def dueno_edit(request, pk):
     dueno = get_object_or_404(Dueno, pk=pk)
@@ -482,3 +569,63 @@ def dueno_edit(request, pk):
     else:
         form = DuenoForm(instance=dueno)
     return render(request, 'duenos_eventos/form_dueno.html', {'form': form})
+
+
+
+#dueños anteriores:
+def duenoanterior_list(request):
+    error_eliminacion = False
+
+    # Eliminar dueño anterior
+    if request.method == 'POST' and 'delete_duenoanterior' in request.POST:
+        duenoanterior_id = request.POST.get('delete_duenoanterior')
+        duenoanterior = get_object_or_404(DuenoAnterior, pk=duenoanterior_id)
+        try:
+            duenoanterior.delete()
+        except ProtectedError:
+            return redirect(f"{reverse('duenoanterior_list')}?error_eliminacion=1")
+        return redirect('duenoanterior_list')
+
+    if request.GET.get('error_eliminacion') == '1':
+        error_eliminacion = True
+
+    duenosanteriores = DuenoAnterior.objects.all()
+    return render(request, 'duenos_anteriores/listar_duenosanteriores.html', {
+        'duenosanteriores': duenosanteriores,
+        'error_eliminacion': error_eliminacion
+    })
+
+# Vista para crear un nuevo dueño anterior
+def duenoanterior_create(request):
+    if request.method == 'POST':
+        form = DuenoAnteriorForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('duenoanterior_list')
+    else:
+        form = DuenoAnteriorForm()
+    return render(request, 'duenos_anteriores/form_duenoanterior.html', {'form': form})
+
+@csrf_exempt
+def duenoanterior_create_ajax(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        if not nombre:
+            return JsonResponse({'error': 'El nombre es requerido.'}, status=400)
+        if DuenoAnterior.objects.filter(nombre=nombre).exists():
+            return JsonResponse({'error': 'Ya existe un dueño anterior con ese nombre.'}, status=400)
+        dueno_anterior = DuenoAnterior.objects.create(nombre=nombre)
+        return JsonResponse({'success': True, 'id': dueno_anterior.id, 'nombre': dueno_anterior.nombre})
+    return JsonResponse({'error': 'Método no permitido.'}, status=405)
+
+# Vista para editar un dueño anterior
+def duenoanterior_edit(request, pk):
+    duenoanterior = get_object_or_404(DuenoAnterior, pk=pk)
+    if request.method == 'POST':
+        form = DuenoAnteriorForm(request.POST, instance=duenoanterior)
+        if form.is_valid():
+            form.save()
+            return redirect('duenoanterior_list')
+    else:
+        form = DuenoAnteriorForm(instance=duenoanterior)
+    return render(request, 'duenos_anteriores/form_duenoanterior.html', {'form': form})

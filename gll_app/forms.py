@@ -13,7 +13,7 @@ class GalloForm(forms.ModelForm):
             'nombre_img': forms.FileInput(attrs={'class': 'form-control'}),
             'peso': forms.NumberInput(attrs={'class': 'form-control'}),
             'nroPlacaAnterior': forms.NumberInput(attrs={'class': 'form-control'}),
-            'nombreDuenoAnterior': forms.TextInput(attrs={'class': 'form-control'}),
+            'nombreDuenoAnterior': forms.Select(attrs={'class': 'form-control'}),
             'estadoDeSalud': forms.Select(attrs={'class': 'form-select'}),
             'fechaMuerte': forms.DateInput(
                 attrs={
@@ -36,6 +36,12 @@ class GalloForm(forms.ModelForm):
         label="Fecha de Nacimiento"
     )
 
+    nombreDuenoAnterior = forms.ModelChoiceField(
+        queryset=DuenoAnterior.objects.all(),
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
 class EncuentroForm(forms.ModelForm):
     class Meta:
         model = Encuentro
@@ -52,7 +58,6 @@ class EncuentroForm(forms.ModelForm):
             ),
             'video': forms.ClearableFileInput(attrs={'accept': 'video/*'}),
             'resultado': forms.Select(attrs={'class': 'form-select'}),
-            'condicionGallo': forms.TextInput(attrs={'class': 'form-control'}),
             'duenoEvento': forms.Select(attrs={'class': 'form-select'}),
             'imagen_evento': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
         }
@@ -97,4 +102,12 @@ class DuenoForm(forms.ModelForm):
         fields = ['nombre']
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del dueño'}),
+        }
+
+class DuenoAnteriorForm(forms.ModelForm):
+    class Meta:
+        model = DuenoAnterior
+        fields = ['nombre']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del dueño anterior'}),
         }
