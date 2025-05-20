@@ -224,7 +224,7 @@ def ver_encuentro(request, pk):
     porcentaje_premio_mayor = float(max(encuentro.porcentaje_premio_mayor, 0))
 
     # Calcular el dinero del premio mayor
-    dinero_del_premio_mayor = premio_mayor * (porcentaje_premio_mayor / 100)
+    dinero_del_premio_mayor = premio_mayor
 
     # Calcular el total apostado
     todo_el_dinero_apostado = apuesta_general + apuesta_por_fuera
@@ -232,26 +232,40 @@ def ver_encuentro(request, pk):
     # Inicializar el dinero después de la apuesta
     dinero_luego_de_la_apuesta = 0
 
+
+    #pago careador 
+    pago_careador = 0
+
+    #gastos 
+    gastos = 0
+
     # Calcular el dinero luego de la apuesta según el resultado
     if resultado == 'V':  # Victoria
         dinero_luego_de_la_apuesta = todo_el_dinero_apostado + dinero_del_premio_mayor
+
+        pago_careador_pollon = premio_mayor * 0.15
+        pago_careador_apuesta_general = apuesta_general * (porcentaje_premio_mayor/100)
+        pago_careador = pago_careador_pollon + pago_careador_apuesta_general 
+
+        gastos = pago_careador + pago_juez + pactada + todo_el_dinero_apostado
+        dinero_final = dinero_luego_de_la_apuesta - gastos
+
     elif resultado == 'T':  # Tablas
-        dinero_luego_de_la_apuesta = 0
+        dinero_luego_de_la_apuesta = todo_el_dinero_apostado
+        gastos = pactada + todo_el_dinero_apostado
+        dinero_final = dinero_luego_de_la_apuesta - gastos
+        pago_juez = 0
+
     elif resultado == 'D':  # Derrota
-        dinero_luego_de_la_apuesta = 0 - todo_el_dinero_apostado
+        gastos = pactada
+        dinero_luego_de_la_apuesta = -todo_el_dinero_apostado
+        dinero_final = dinero_luego_de_la_apuesta - gastos
+        pago_juez = 0
     else:
         raise Exception("Resultado no contemplado: " + resultado)
 
-    # Calcular el pago al careador (15% si el dinero luego de la apuesta es positivo)
-    pago_careador = 0 if apuesta_general <= 0 else apuesta_general * 0.15
-    pago_careador = pago_careador + (0 if dinero_del_premio_mayor <= 0 else dinero_del_premio_mayor * 0.15)
 
-    # Calcular los gastos totales
-    gastos = pago_careador + pago_juez + pactada
-    print(pago_careador)
-    
-    # Calcular el dinero final después de restar los gastos
-    dinero_final = dinero_luego_de_la_apuesta - gastos
+    print(pago_juez)
 
     # Pasar todos los datos al template
     return render(

@@ -5,11 +5,19 @@
 {% block content %}
 <div class="container py-4">
   <div class="card shadow-sm">
-    <div class="card-header bg-primary text-white">
-      <h2 class="mb-0">
-        <i class="bi bi-calendar-event me-2"></i>{{ titulo|default:"Registrar encuentro" }}
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h2 class="mb-0 d-flex align-items-center">
+        <i class="bi bi-calendar-event me-2"></i>
+        {{ titulo|default:"Registrar encuentro" }}
       </h2>
+
+      {% if encuentro %}
+        <a class="btn btn-warning" href="{% url 'ver_encuentro' pk=encuentro.idEncuentro %}">
+          Ver encuentro #{{ encuentro.idEncuentro }}
+        </a>
+      {% endif %}
     </div>
+
     <div class="card-body">
       <form method="post" enctype="multipart/form-data" id="encuentroForm"
         action="{% if encuentro %}{% url 'editar_encuentro' encuentro.idEncuentro %}{% else %}{% url 'crear_encuentro' %}{% endif %}"
@@ -160,8 +168,7 @@
               {{ form.porcentaje_premio_mayor }}
               <span class="input-group-text">%</span>
             </div>
-            <label for="{{ form.porcentaje_premio_mayor.id_for_label }}" class="form-label">Porcentaje ganado del
-              pollón</label>
+            <label for="{{ form.porcentaje_premio_mayor.id_for_label }}" class="form-label">% de la apuesta general para el careador</label>
           </div>
 
         </div>
@@ -289,45 +296,46 @@
                 <div class="bg-light p-3 rounded mb-3">
                   <h5 class="text-primary mb-3"><i class="bi bi-coin me-2"></i>Detalles de Apuestas</h5>
 
-                  <div class="d-flex justify-content-between border-bottom pb-2">
-                    <span>1. Apuesta pactada:</span>
-                    <strong class="text-success">$<span id="valorPactada"></span></strong>
-                  </div>
-
                   <div class="d-flex justify-content-between border-bottom pb-2 pt-2">
-                    <span>2. Apuesta general:</span>
+                    <span>1. Apuesta general:</span>
                     <strong class="text-success">$<span id="valorApuestaGeneral"></span></strong>
                   </div>
 
                   <div class="d-flex justify-content-between border-bottom pb-2 pt-2">
-                    <span>4. Apuesta por fuera:</span>
+                    <span>2. Apuesta por fuera:</span>
                     <strong class="text-success">$<span id="valorApuestaPorFuera"></span></strong>
                   </div>
                 </div>
 
                 <div class="bg-light p-3 rounded mb-3">
-                  <h5 class="text-primary mb-3"><i class="bi bi-calculator me-2"></i>Cálculos Finales</h5>
+                  <h5 class="text-primary mb-3"><i class="bi bi-calculator me-2"></i>Cálculo del pago del careador</h5>
 
                   <div class="d-flex justify-content-between border-bottom pb-2">
-                    <span>5. Valor total del pollón:</span>
-                    <strong class="text-info">$<span id="valorPollon"></span></strong>
+                    <span>3. Sobre el pollón (15% de <span id="valorTotalPollon"></span>):</span>
+                    <strong class="text-info"><span id="valorPagoPollon"></span></strong>
                   </div>
 
-                  <div class="d-flex justify-content-between pt-2">
-                    <span>6. % Ganado del pollón:</span>
-                    <strong class="text-info"><span id="porcentajePollon"></span>%</strong>
+                  <div class="d-flex justify-content-between border-bottom pb-2">
+                    <span>4. Sobre la apuesta general (<span id="valorPorcentajeApuestaGeneral"></span>% de <span id="valorTotalApuestaGeneral"></span>):</span>
+                    <strong class="text-info"><span id="valorPagoApuestaGeneral"></span></strong>
                   </div>
+
                 </div>
 
                 <div class="bg-light p-3 rounded mb-3">
                   <h5 class="text-primary mb-3"><i class="bi bi-cash-coin me-2"></i>Transacciones</h5>
 
                   <div class="d-flex justify-content-between border-bottom pb-2">
-                    <span>3. Pago del juez:</span>
+                    <span>5. Pago del juez:</span>
                     <strong class="text-danger">$<span id="pagoJuez"></span></strong>
                   </div>
 
-                  <div class="alert alert-warning mt-3">
+                  <div class="d-flex justify-content-between border-bottom pb-2">
+                    <span>6. Pactada:</span>
+                    <strong class="text-danger">$<span id="valorPactada"></span></strong>
+                  </div>
+
+                  <div class="alert mt-3" id="divResultado">
                     <h6><i class="bi bi-trophy me-2"></i>Resultado:</h6>
                     <strong class="h5" id="resultadoEncuentro"></strong>
                   </div>
@@ -352,9 +360,11 @@
                 <div class="bg-light p-3 rounded mb-3">
                   <h5 class="text-primary mb-3"><i class="bi bi-graph-down me-2"></i>Gastos</h5>
                   <div class="mb-2">
-                    <span class="d-block">Juez (<span id="valorPagoJuezGastos"></span>)</span>
-                    <span class="d-block">Careador (<span id="valorPagoCareador"></span>)</span>
+                    <span class="d-block">Pago del juez (<span id="valorPagoJuezGastos"></span>)</span>
+                    <span class="d-block">Pago del careador (<span id="valorPagoCareador"></span>)</span>
                     <span class="d-block">Pactada (<span id="valorPactadaGastos"></span>)</span>
+                    <span class="d-block" id="contenedorvalorTotalApostado">Total apostado (<span id="valorTotalApostado"></span>)</span>
+                    
                     <hr>
                     <strong class="text-danger h5">$<span id="gastos"></span></strong>
                   </div>
@@ -374,7 +384,7 @@
             </div>
 
             <button type="button" class="btn btn-danger mt-3" id="btnCerrarCalculos">
-              <i class="bi bi-x me-2"></i>Cerrar ventana de cálculos
+              <i class="bi bi-x-circle me-2"></i>Cerrar ventana de cálculos
             </button>
           </div>
 
@@ -386,13 +396,13 @@
           </a>
         
           <div class="d-flex flex-column flex-md-row gap-2 order-0 order-md-1">
-            <a href="{% url 'dueno_create' %}" class="btn btn-info">
+            <a href="{% url 'dueno_create' %}" class="btn btn-outline-info">
               <i class="bi bi-house me-1"></i>Registrar dueños
             </a>
-            <a href="{% url 'galpon_create' %}" class="btn btn-warning">
+            <a href="{% url 'galpon_create' %}" class="btn btn-outline-warning">
               <i class="bi bi-house me-1"></i>Registrar galpones
             </a>
-            <a href="{% url 'estado_create' %}" class="btn btn-danger">
+            <a href="{% url 'estado_create' %}" class="btn btn-outline-danger">
               <i class="bi bi-clipboard2-plus me-1"></i>Registrar estados
             </a>
             <button type="submit" class="btn btn-success">
@@ -461,198 +471,208 @@
 
 <script>
 
-document.addEventListener('DOMContentLoaded', function () {
+  const inputsABloquear = ['id_premio_mayor', 'id_porcentaje_premio_mayor', 'id_pago_juez'];
 
-  // Función genérica para añadir un nuevo galpón
-  function añadirGalpon(selectId) {
-    Swal.fire({
-      title: 'Ingresa nuevo galpón:',
-      input: 'text',
-      inputPlaceholder: 'Introduce el nombre aquí',
-      showCancelButton: true,
-      confirmButtonText: 'Registrar',
-      cancelButtonText: 'Cancelar',
-      preConfirm: (inputValue) => {
-        if (!inputValue) {
-          Swal.showValidationMessage('¡Por favor, ingresa algo!');
-        }
-        return inputValue;
-      }
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const nombre = result.value;
+  document.addEventListener('DOMContentLoaded', function () {
 
-        fetch("{% url 'galpon_create_ajax' %}", {
-          method: 'POST',
-          headers: {
-            'X-CSRFToken': '{{ csrf_token }}',
-          },
-          body: new URLSearchParams({
-            'nombre': nombre,
-          })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            const selectGalpon = document.getElementById(selectId);
-            const otroSelectId = (selectId === 'id_galpon1') ? 'id_galpon2' : 'id_galpon1';
-            const otroSelect = document.getElementById(otroSelectId);
+    const selectElemento = document.getElementById('id_resultado');
+    const valorSeleccioado = selectElemento.value;
+    if (valorSeleccioado !== 'V') {
+      limpiarYBloquearInputs();
+    }
 
-            // Crear la nueva opción
-            const nuevaOpcionGalpon = document.createElement('option');
-            nuevaOpcionGalpon.value = data.id;
-            nuevaOpcionGalpon.textContent = data.nombre;
 
-            // Añadir la nueva opción al select correspondiente
-            selectGalpon.appendChild(nuevaOpcionGalpon);
 
-            // Añadir la nueva opción al otro select
-            const nuevaOpcionOtroGalpon = nuevaOpcionGalpon.cloneNode(true);
-            otroSelect.appendChild(nuevaOpcionOtroGalpon);
-
-            // Seleccionar la nueva opción solo en el select correspondiente
-            nuevaOpcionGalpon.selected = true;
-
-            Swal.fire('¡Éxito!', 'Galpón registrado correctamente.', 'success');
-          } else {
-            Swal.fire('Error', data.error || 'No se pudo registrar.', 'error');
+    // Función genérica para añadir un nuevo galpón
+    function añadirGalpon(selectId) {
+      Swal.fire({
+        title: 'Ingresa nuevo galpón:',
+        input: 'text',
+        inputPlaceholder: 'Introduce el nombre aquí',
+        showCancelButton: true,
+        confirmButtonText: 'Registrar',
+        cancelButtonText: 'Cancelar',
+        preConfirm: (inputValue) => {
+          if (!inputValue) {
+            Swal.showValidationMessage('¡Por favor, ingresa algo!');
           }
-        })
-        .catch(error => {
-          console.error(error);
-          Swal.fire('Error', 'Error en la petición.', 'error');
-        });
-      }
-    });
-  }
-
-  function añadirEstado(selectId) {
-    Swal.fire({
-      title: 'Ingresa nuevo estado:',
-      input: 'text',
-      inputPlaceholder: 'Introduce el nombre aquí',
-      showCancelButton: true,
-      confirmButtonText: 'Registrar',
-      cancelButtonText: 'Cancelar',
-      preConfirm: (inputValue) => {
-        if (!inputValue) {
-          Swal.showValidationMessage('¡Por favor, ingresa algo!');
+          return inputValue;
         }
-        return inputValue;
-      }
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const nombre = result.value;
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const nombre = result.value;
 
-        fetch("{% url 'estado_create_ajax' %}", {
-          method: 'POST',
-          headers: {
-            'X-CSRFToken': '{{ csrf_token }}',
-          },
-          body: new URLSearchParams({
-            'nombre': nombre,
+          fetch("{% url 'galpon_create_ajax' %}", {
+            method: 'POST',
+            headers: {
+              'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: new URLSearchParams({
+              'nombre': nombre,
+            })
           })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            const selectEstado = document.getElementById(selectId);
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                const selectGalpon = document.getElementById(selectId);
+                const otroSelectId = (selectId === 'id_galpon1') ? 'id_galpon2' : 'id_galpon1';
+                const otroSelect = document.getElementById(otroSelectId);
 
-            // Crear la nueva opción para el select de estado
-            const nuevaOpcionEstado = document.createElement('option');
-            nuevaOpcionEstado.value = data.id;
-            nuevaOpcionEstado.textContent = data.nombre;
+                // Crear la nueva opción
+                const nuevaOpcionGalpon = document.createElement('option');
+                nuevaOpcionGalpon.value = data.id;
+                nuevaOpcionGalpon.textContent = data.nombre;
 
-            // Añadir la nueva opción al select
-            selectEstado.appendChild(nuevaOpcionEstado);
+                // Añadir la nueva opción al select correspondiente
+                selectGalpon.appendChild(nuevaOpcionGalpon);
 
-            // Seleccionar la nueva opción
-            nuevaOpcionEstado.selected = true;
+                // Añadir la nueva opción al otro select
+                const nuevaOpcionOtroGalpon = nuevaOpcionGalpon.cloneNode(true);
+                otroSelect.appendChild(nuevaOpcionOtroGalpon);
 
-            Swal.fire('¡Éxito!', 'Estado registrado correctamente.', 'success');
-          } else {
-            Swal.fire('Error', data.error || 'No se pudo registrar.', 'error');
-          }
-        })
-        .catch(error => {
-          console.error(error);
-          Swal.fire('Error', 'Error en la petición.', 'error');
-        });
-      }
-    });
-  }
+                // Seleccionar la nueva opción solo en el select correspondiente
+                nuevaOpcionGalpon.selected = true;
 
-  function añadirDueno(selectId) {
-    Swal.fire({
-      title: 'Ingresa nuevo dueño:',
-      input: 'text',
-      inputPlaceholder: 'Introduce el nombre aquí',
-      showCancelButton: true,
-      confirmButtonText: 'Registrar',
-      cancelButtonText: 'Cancelar',
-      preConfirm: (inputValue) => {
-        if (!inputValue) {
-          Swal.showValidationMessage('¡Por favor, ingresa algo!');
+                Swal.fire('¡Éxito!', 'Galpón registrado correctamente.', 'success');
+              } else {
+                Swal.fire('Error', data.error || 'No se pudo registrar.', 'error');
+              }
+            })
+            .catch(error => {
+              console.error(error);
+              Swal.fire('Error', 'Error en la petición.', 'error');
+            });
         }
-        return inputValue;
-      }
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const nombre = result.value;
+      });
+    }
 
-        fetch("{% url 'dueno_create_ajax' %}", {
-          method: 'POST',
-          headers: {
-            'X-CSRFToken': '{{ csrf_token }}',
-          },
-          body: new URLSearchParams({
-            'nombre': nombre,
-          })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            const selectDueno = document.getElementById(selectId);
-
-            // Crear la nueva opción para el select de dueño
-            const nuevaOpcionDueno = document.createElement('option');
-            nuevaOpcionDueno.value = data.id;
-            nuevaOpcionDueno.textContent = data.nombre;
-
-            selectDueno.appendChild(nuevaOpcionDueno);
-
-            nuevaOpcionDueno.selected = true;
-
-            Swal.fire('¡Éxito!', 'Dueño registrado correctamente.', 'success');
-          } else {
-            Swal.fire('Error', data.error || 'No se pudo registrar.', 'error');
+    function añadirEstado(selectId) {
+      Swal.fire({
+        title: 'Ingresa nuevo estado:',
+        input: 'text',
+        inputPlaceholder: 'Introduce el nombre aquí',
+        showCancelButton: true,
+        confirmButtonText: 'Registrar',
+        cancelButtonText: 'Cancelar',
+        preConfirm: (inputValue) => {
+          if (!inputValue) {
+            Swal.showValidationMessage('¡Por favor, ingresa algo!');
           }
-        })
-        .catch(error => {
-          console.error(error);
-          Swal.fire('Error', 'Error en la petición.', 'error');
-        });
-      }
+          return inputValue;
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const nombre = result.value;
+
+          fetch("{% url 'estado_create_ajax' %}", {
+            method: 'POST',
+            headers: {
+              'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: new URLSearchParams({
+              'nombre': nombre,
+            })
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                const selectEstado = document.getElementById(selectId);
+
+                // Crear la nueva opción para el select de estado
+                const nuevaOpcionEstado = document.createElement('option');
+                nuevaOpcionEstado.value = data.id;
+                nuevaOpcionEstado.textContent = data.nombre;
+
+                // Añadir la nueva opción al select
+                selectEstado.appendChild(nuevaOpcionEstado);
+
+                // Seleccionar la nueva opción
+                nuevaOpcionEstado.selected = true;
+
+                Swal.fire('¡Éxito!', 'Estado registrado correctamente.', 'success');
+              } else {
+                Swal.fire('Error', data.error || 'No se pudo registrar.', 'error');
+              }
+            })
+            .catch(error => {
+              console.error(error);
+              Swal.fire('Error', 'Error en la petición.', 'error');
+            });
+        }
+      });
+    }
+
+    function añadirDueno(selectId) {
+      Swal.fire({
+        title: 'Ingresa nuevo dueño:',
+        input: 'text',
+        inputPlaceholder: 'Introduce el nombre aquí',
+        showCancelButton: true,
+        confirmButtonText: 'Registrar',
+        cancelButtonText: 'Cancelar',
+        preConfirm: (inputValue) => {
+          if (!inputValue) {
+            Swal.showValidationMessage('¡Por favor, ingresa algo!');
+          }
+          return inputValue;
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const nombre = result.value;
+
+          fetch("{% url 'dueno_create_ajax' %}", {
+            method: 'POST',
+            headers: {
+              'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: new URLSearchParams({
+              'nombre': nombre,
+            })
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                const selectDueno = document.getElementById(selectId);
+
+                // Crear la nueva opción para el select de dueño
+                const nuevaOpcionDueno = document.createElement('option');
+                nuevaOpcionDueno.value = data.id;
+                nuevaOpcionDueno.textContent = data.nombre;
+
+                selectDueno.appendChild(nuevaOpcionDueno);
+
+                nuevaOpcionDueno.selected = true;
+
+                Swal.fire('¡Éxito!', 'Dueño registrado correctamente.', 'success');
+              } else {
+                Swal.fire('Error', data.error || 'No se pudo registrar.', 'error');
+              }
+            })
+            .catch(error => {
+              console.error(error);
+              Swal.fire('Error', 'Error en la petición.', 'error');
+            });
+        }
+      });
+    }
+
+    document.getElementById('btnAniadirDueno').addEventListener('click', function () {
+      añadirDueno('id_duenoEvento');
     });
-  }
 
-  document.getElementById('btnAniadirDueno').addEventListener('click', function () {
-    añadirDueno('id_duenoEvento');
+    document.getElementById('btnAniadirEstado').addEventListener('click', function () {
+      añadirEstado('id_condicionGallo');
+    });
+
+    document.getElementById('btnAniadirGalpon1').addEventListener('click', function () {
+      añadirGalpon('id_galpon1');
+    });
+
+    document.getElementById('btnAniadirGalpon2').addEventListener('click', function () {
+      añadirGalpon('id_galpon2');
+    });
+
   });
-
-  document.getElementById('btnAniadirEstado').addEventListener('click', function () {
-    añadirEstado('id_condicionGallo');
-  });
-
-  document.getElementById('btnAniadirGalpon1').addEventListener('click', function () {
-    añadirGalpon('id_galpon1');
-  });
-
-  document.getElementById('btnAniadirGalpon2').addEventListener('click', function () {
-    añadirGalpon('id_galpon2');
-  });
-
-});
 
   const arregloDeInputs = ['id_pactada', 'id_apuesta_general', 'id_pago_juez', 'id_apuesta_por_fuera', 'id_premio_mayor', 'id_porcentaje_premio_mayor']
   arregloDeInputs.forEach(inputId => {
@@ -666,26 +686,56 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   function calcular(pactada, apuestaGeneral, pagoJuez, apuestaPorFuera, totalPollon, porcentajePollon, resultado, resultadoTextual) {
-    const dineroDelPremioMayor = totalPollon * (porcentajePollon / 100);
-    const totalApostado = apuestaGeneral + apuestaPorFuera;
+    let porcentajeCareadorApuestaGeneral = porcentajePollon / 100;
+    let pagoCareadorPollon = totalPollon * 0.15;
+    let pagoCareadorApuestaGeneral = apuestaGeneral * porcentajeCareadorApuestaGeneral
 
     let dineroLuegoDeLaApuesta = 0;
     let pagoCareador = 0;
+    let gastos = 0;
+    let dineroFinal = 0;
+
+    let totalApostado = apuestaGeneral + apuestaPorFuera;
+
+    let divResultado = document.getElementById("divResultado");
+    const contenedorvalorTotalApostado = document.getElementById('contenedorvalorTotalApostado');
 
     try {
       switch (resultado) {
         case 'V': // Victoria
-          dineroLuegoDeLaApuesta = totalApostado + dineroDelPremioMayor;
-          pagoCareador = (apuestaGeneral * 0.15) + (dineroDelPremioMayor * 0.15);
-          btnCalcularGastos.style.display = 'none';
+          contenedorvalorTotalApostado.classList.remove('d-none');
+          contenedorvalorTotalApostado.classList.add('d-block');
+          dineroLuegoDeLaApuesta = totalApostado + totalPollon;
+          pagoCareador = pagoCareadorPollon + pagoCareadorApuestaGeneral;
+          gastos = pagoCareador + pagoJuez + pactada + totalApostado;
+          dineroFinal = dineroLuegoDeLaApuesta - gastos;
+          
+          divResultado.classList.remove("alert-danger", "alert-warning");
+          divResultado.classList.add("alert-success");
+          document.getElementById('valorTotalApostado').innerText = totalApostado.toFixed(2);
           break;
         case 'T': // Tablas
-          dineroLuegoDeLaApuesta = 0;
-          btnCalcularGastos.style.display = 'none';
+          contenedorvalorTotalApostado.classList.remove('d-none');
+          contenedorvalorTotalApostado.classList.add('d-block');
+          pagoJuez = 0;
+          dineroLuegoDeLaApuesta = totalApostado;
+          gastos = pactada + totalApostado;
+          dineroFinal = dineroLuegoDeLaApuesta - gastos;
+          divResultado.classList.remove("alert-danger", "alert-success");
+          divResultado.classList.add("alert-warning");
+          document.getElementById('valorTotalApostado').innerText = totalApostado.toFixed(2);
           break;
         case 'D': // Derrota
+          contenedorvalorTotalApostado.classList.remove('d-block');
+          contenedorvalorTotalApostado.classList.add('d-none');
+          pagoJuez = 0;
           dineroLuegoDeLaApuesta = -totalApostado;
-          btnCalcularGastos.style.display = 'none';
+          gastos = pactada;
+          dineroFinal = dineroLuegoDeLaApuesta - gastos;
+          apuestaGeneral = -apuestaGeneral;
+          apuestaPorFuera = -apuestaPorFuera;
+          divResultado.classList.remove("alert-warning", "alert-success");
+          divResultado.classList.add("alert-danger");
           break;
         default:
           Swal.fire({
@@ -697,9 +747,6 @@ document.addEventListener('DOMContentLoaded', function () {
           return;
       }
 
-      // Calcular los gastos totales
-      const gastos = pagoCareador + pagoJuez + pactada;
-      const dineroFinal = dineroLuegoDeLaApuesta - gastos;
 
       // Mostrar resultados en el card
       cardCalculos.style.display = 'block';
@@ -707,8 +754,6 @@ document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('valorApuestaGeneral').innerText = apuestaGeneral.toFixed(2);
       document.getElementById('pagoJuez').innerText = pagoJuez.toFixed(2);
       document.getElementById('valorApuestaPorFuera').innerText = apuestaPorFuera.toFixed(2);
-      document.getElementById('valorPollon').innerText = totalPollon.toFixed(2);
-      document.getElementById('porcentajePollon').innerText = porcentajePollon.toFixed(2);
       document.getElementById('resultadoEncuentro').innerText = resultadoTextual;
 
       // Llenar los valores dentro de los paréntesis
@@ -728,6 +773,15 @@ document.addEventListener('DOMContentLoaded', function () {
       // Llenar los totales en los paréntesis de Ganancias y Gastos
       document.getElementById('valorGananciasTotal').innerText = dineroLuegoDeLaApuesta.toFixed(2);
       document.getElementById('valorGastosTotal').innerText = gastos.toFixed(2);
+
+      //sobre el pago del careador
+      document.getElementById('valorTotalPollon').innerText = totalPollon.toFixed(2);
+      document.getElementById('valorPagoPollon').innerText = pagoCareadorPollon.toFixed(2);
+
+      document.getElementById('valorPorcentajeApuestaGeneral').innerText = porcentajePollon.toFixed(2);
+      document.getElementById('valorTotalApuestaGeneral').innerText = apuestaGeneral.toFixed(2);
+      document.getElementById('valorPagoApuestaGeneral').innerText = pagoCareadorApuestaGeneral.toFixed(2);
+
 
     } catch (error) {
       console.error("Error en el cálculo: ", error);
@@ -755,20 +809,18 @@ document.addEventListener('DOMContentLoaded', function () {
   btnCerrarCalculos.addEventListener('click', function () {
     const cardCalculos = document.getElementById("cardCalculos");
     cardCalculos.style.display = 'none';
-    //volver a mostrar el boton de calcular
-    btnCalcularGastos.style.display = 'block';
   });
 
   // bloquear inputs de premio mayor y porcentaje
   const selectResultado = document.getElementById('id_resultado');
-  const inputsABloquear = ['id_premio_mayor', 'id_porcentaje_premio_mayor', 'id_pago_juez'];
+
 
   function limpiarYBloquearInputs() {
     inputsABloquear.forEach(id => {
       const input = document.getElementById(id);
       input.value = '';
       input.disabled = true;
-      input.style.backgroundColor = '#A7A6A6';
+      input.style.backgroundColor = '#E7E7E7';
     });
   }
 

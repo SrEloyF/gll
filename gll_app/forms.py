@@ -70,6 +70,9 @@ class EncuentroForm(forms.ModelForm):
             })
         self.fields['video'].required = False
         self.fields['imagen_evento'].required = False
+        self.fields['pago_juez'].required = False
+        self.fields['premio_mayor'].required = False
+        self.fields['porcentaje_premio_mayor'].required = False
         
         
 class ColorForm(forms.ModelForm):
