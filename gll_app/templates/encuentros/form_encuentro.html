@@ -312,12 +312,12 @@
 
                   <div class="d-flex justify-content-between border-bottom pb-2">
                     <span>3. Sobre el pollón (15% de <span id="valorTotalPollon"></span>):</span>
-                    <strong class="text-info"><span id="valorPagoPollon"></span></strong>
+                    <strong class="text-danger"><span id="valorPagoPollon"></span></strong>
                   </div>
 
                   <div class="d-flex justify-content-between border-bottom pb-2">
                     <span>4. Sobre la apuesta general (<span id="valorPorcentajeApuestaGeneral"></span>% de <span id="valorTotalApuestaGeneral"></span>):</span>
-                    <strong class="text-info"><span id="valorPagoApuestaGeneral"></span></strong>
+                    <strong class="text-danger"><span id="valorPagoApuestaGeneral"></span></strong>
                   </div>
 
                 </div>
@@ -472,15 +472,21 @@
 <script>
 
   const inputsABloquear = ['id_premio_mayor', 'id_porcentaje_premio_mayor', 'id_pago_juez'];
-
+  const inputsABloquearSinJuez = ['id_premio_mayor', 'id_porcentaje_premio_mayor'];
   document.addEventListener('DOMContentLoaded', function () {
 
     const selectElemento = document.getElementById('id_resultado');
     const valorSeleccioado = selectElemento.value;
-    if (valorSeleccioado !== 'V') {
-      limpiarYBloquearInputs();
-    }
 
+    if (valorSeleccioado !== 'V') {
+      limpiarYBloquearInputs(inputsABloquear);
+    } else if (valorSeleccioado === 'T') {
+      limpiarYBloquearInputs(inputsABloquearSinJuez);
+    } else if (valorSeleccioado === 'D') {
+      limpiarYBloquearInputs(inputsABloquear);
+    } else {
+      habilitarInputs(inputsABloquear);
+    }
 
 
     // Función genérica para añadir un nuevo galpón
@@ -703,11 +709,11 @@
     try {
       switch (resultado) {
         case 'V': // Victoria
-          contenedorvalorTotalApostado.classList.remove('d-none');
-          contenedorvalorTotalApostado.classList.add('d-block');
+          contenedorvalorTotalApostado.classList.remove('d-block');
+          contenedorvalorTotalApostado.classList.add('d-none');
           dineroLuegoDeLaApuesta = totalApostado + totalPollon;
           pagoCareador = pagoCareadorPollon + pagoCareadorApuestaGeneral;
-          gastos = pagoCareador + pagoJuez + pactada + totalApostado;
+          gastos = pagoCareador + pagoJuez + pactada;// + totalApostado;
           dineroFinal = dineroLuegoDeLaApuesta - gastos;
           
           divResultado.classList.remove("alert-danger", "alert-warning");
@@ -815,8 +821,9 @@
   const selectResultado = document.getElementById('id_resultado');
 
 
-  function limpiarYBloquearInputs() {
-    inputsABloquear.forEach(id => {
+  function limpiarYBloquearInputs(arreglo) {
+    arreglo.forEach(id => {
+
       const input = document.getElementById(id);
       input.value = '';
       input.disabled = true;
@@ -824,9 +831,8 @@
     });
   }
 
-
-  function habilitarInputs() {
-    inputsABloquear.forEach(id => {
+  function habilitarInputs(arreglo) {    
+    arreglo.forEach(id => {
       const input = document.getElementById(id);
       input.disabled = false;
       input.style.backgroundColor = '';
@@ -835,11 +841,16 @@
 
   selectResultado.addEventListener('change', function () {
     const valorSeleccionado = selectResultado.value;
-
+    
     if (valorSeleccionado !== 'V') {
-      limpiarYBloquearInputs();
+      limpiarYBloquearInputs(inputsABloquear);
+    } if (valorSeleccionado === 'T') {
+      habilitarInputs(inputsABloquear);
+      limpiarYBloquearInputs(inputsABloquearSinJuez);
+    } else if (valorSeleccionado === 'D') {
+      limpiarYBloquearInputs(inputsABloquear);
     } else {
-      habilitarInputs();
+      habilitarInputs(inputsABloquear);
     }
   });
 

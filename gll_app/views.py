@@ -167,7 +167,14 @@ def eliminar(request, idGallo):
 #encuentros
 def crear_encuentro(request):
     if request.method == 'POST':
+    
         form = EncuentroForm(request.POST, request.FILES)
+        if form.is_valid():
+            print("formulario valido")
+        else:
+            print("errores")
+            print(form.errors)
+
         id_gallo = request.POST.get('gallo')
 
         if not id_gallo:
@@ -185,6 +192,7 @@ def crear_encuentro(request):
                 encuentro.save()
                 return redirect('ver_encuentro', pk=encuentro.idEncuentro)
             else:
+                print("errores") #no se imprime esto
                 print(form.errors)
                 print("Gallo: ", gallo)
 
@@ -196,7 +204,6 @@ def crear_encuentro(request):
         'form': form,
         'gallos': gallos
     })
-
 
 def listar_encuentros(request):
     encuentros = Encuentro.objects.all().order_by('-fechaYHora')
@@ -216,12 +223,13 @@ def ver_encuentro(request, pk):
     resultado = encuentro.resultado
 
     # Obtener los valores que usaremos para los cálculos, asegurándonos de que no sean negativos
-    pactada = float(max(encuentro.pactada, 0))  # Este dato fijo será restado
-    pago_juez = float(max(encuentro.pago_juez, 0))  # Este dato fijo será restado
-    apuesta_general = float(max(encuentro.apuesta_general, 0))
-    apuesta_por_fuera = float(max(encuentro.apuesta_por_fuera, 0))
-    premio_mayor = float(max(encuentro.premio_mayor, 0))
-    porcentaje_premio_mayor = float(max(encuentro.porcentaje_premio_mayor, 0))
+    pactada = float(max(encuentro.pactada if encuentro.pactada is not None else 0, 0))
+    pago_juez = float(max(encuentro.pago_juez if encuentro.pago_juez is not None else 0, 0))
+    apuesta_general = float(max(encuentro.apuesta_general if encuentro.apuesta_general is not None else 0, 0))
+    apuesta_por_fuera = float(max(encuentro.apuesta_por_fuera if encuentro.apuesta_por_fuera is not None else 0, 0))
+    premio_mayor = float(max(encuentro.premio_mayor if encuentro.premio_mayor is not None else 0, 0))
+    porcentaje_premio_mayor = float(max(encuentro.porcentaje_premio_mayor if encuentro.porcentaje_premio_mayor is not None else 0, 0))
+
 
     # Calcular el dinero del premio mayor
     dinero_del_premio_mayor = premio_mayor
@@ -247,7 +255,7 @@ def ver_encuentro(request, pk):
         pago_careador_apuesta_general = apuesta_general * (porcentaje_premio_mayor/100)
         pago_careador = pago_careador_pollon + pago_careador_apuesta_general 
 
-        gastos = pago_careador + pago_juez + pactada + todo_el_dinero_apostado
+        gastos = pago_careador + pago_juez + pactada #+ todo_el_dinero_apostado
         dinero_final = dinero_luego_de_la_apuesta - gastos
 
     elif resultado == 'T':  # Tablas

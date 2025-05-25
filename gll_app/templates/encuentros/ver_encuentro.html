@@ -143,7 +143,7 @@
       </div>
 
       <!-- Resumen Financiero -->
-<div class="container pb-4">
+<div class="container p-0">
   <!-- Tarjeta principal de resumen financiero -->
   <div class="card shadow-lg border-0 mb-4">
     <div class="card-header bg-primary text-white p-3">
@@ -428,7 +428,9 @@
                     </div>
                   </div>
 
-                  {% if encuentro.resultado != 'D' %}
+                  {% if encuentro.resultado != 'V' %}
+                  <!--en caso de tablas(T) o victoria(V) se mostrará esto-->
+                  <!--[point]esto no se debe mostrar en caso de V-->
                   <div class="row g-4 d-flex justify-content-center">
                     <div class="col-md-4">
                       <div class="card border-0 shadow-sm h-100">
@@ -518,7 +520,7 @@
                               <span>Pago careador</span>
                               <span>${{ pago_careador }}</span>
                             </li>
-                            {% if encuentro.resultado != 'D' %}
+                            {% if encuentro.resultado != 'V' %}
                             <li class="list-group-item bg-transparent d-flex justify-content-between">
                               <span>Total apostado</span>
                               <span>${{ todo_el_dinero_apostado }}</span>
@@ -579,7 +581,7 @@
             {% if encuentro.resultado == 'V' %}
               <i class="bi bi-trophy me-2"></i>Victoria
             {% elif encuentro.resultado == 'T' %}
-              <i class="bi bi-dash-circle-fill"></i>Tablas
+              <i class="bi bi-dash-circle-fill me-2"></i>Tablas
             {% else %}
               <i class="bi bi-x-circle me-2"></i>Derrota
             {% endif %}
@@ -655,8 +657,11 @@
             <a href="{% url 'editar_encuentro' encuentro.idEncuentro %}" class="btn btn-warning">
               <i class="bi bi-pencil-square me-2"></i>Editar Encuentro
             </a>
+            <a href="{% url 'crear_encuentro' %}" class="btn btn-success">
+              <i class="bi bi-plus-circle me-2"></i>Registrar nuevo encuentro
+            </a>
             <a href="{% url 'listar_encuentros' %}" class="btn btn-secondary">
-              <i class="bi bi-arrow-left me-2"></i>Regresar al Listado de encuentros
+              <i class="bi bi-arrow-left-square me-2"></i>Regresar al listado de encuentros
             </a>
           </div>
         </div>

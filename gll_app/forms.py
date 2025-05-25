@@ -73,6 +73,14 @@ class EncuentroForm(forms.ModelForm):
         self.fields['pago_juez'].required = False
         self.fields['premio_mayor'].required = False
         self.fields['porcentaje_premio_mayor'].required = False
+
+    def clean(self):
+        cleaned_data = super().clean()
+        premio_mayor = cleaned_data.get('premio_mayor')
+        if premio_mayor is None:
+            cleaned_data['premio_mayor'] = 0
+
+        return cleaned_data
         
         
 class ColorForm(forms.ModelForm):
