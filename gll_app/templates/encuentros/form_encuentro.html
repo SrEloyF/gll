@@ -93,7 +93,7 @@
           <div class="col-md-6">
             <div class="form-floating position-relative">
               {{ form.galpon2 }}
-              <label for="{{ form.galpon1.id_for_label }}">Galpón 1:</label>
+              <label for="{{ form.galpon1.id_for_label }}">Galpón 2:</label>
               
               <div class="position-absolute end-0 top-0 d-flex mt-2 me-2">
                 <div class="input-group-text">
@@ -470,82 +470,149 @@
 </div>
 
 <script>
+  
+  const duenosOptions = [
+    {% for dueno in duenos %}
+      {
+        id: {{ dueno.id }},
+        nombre: "{{ dueno.nombre }}",
+        galpones: [
+          {% for galpon in dueno.galpon_set.all %}
+            { id: {{ galpon.id }}, nombre: "{{ galpon.nombre }}" }{% if not forloop.last %},{% endif %}
+          {% endfor %}
+        ]
+      }
+      {% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
+
+  function addUpperCaseListenerToSwalInputs() {
+    const observer = new MutationObserver((mutationsList) => {
+      mutationsList.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          const swalInputs = document.querySelectorAll('.swal2-input');
+          swalInputs.forEach(input => {
+            if (!input.hasAttribute('data-upper-case-listener')) {
+              input.addEventListener('input', () => {
+                input.value = input.value.toUpperCase();
+              });
+              input.setAttribute('data-upper-case-listener', 'true');
+            }
+          });
+        }
+      });
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
 
   const inputsABloquear = ['id_premio_mayor', 'id_porcentaje_premio_mayor', 'id_pago_juez'];
   const inputsABloquearSinJuez = ['id_premio_mayor', 'id_porcentaje_premio_mayor'];
   document.addEventListener('DOMContentLoaded', function () {
+    addUpperCaseListenerToSwalInputs();
+
+    document.getElementById('id_galpon2').addEventListener('change', function () {
+      let idOpcionSeleccionada = this.value;
+      const duenoSelect = document.getElementById('id_duenoEvento');
+
+      if (!idOpcionSeleccionada) {
+        duenoSelect.value = "";
+        return;
+      }
+
+      let duenoEncontrado = duenosOptions.find(dueno =>
+        dueno.galpones.some(galpon => galpon.id.toString() === idOpcionSeleccionada)
+      );
+
+      if (duenoEncontrado) {
+        duenoSelect.value = duenoEncontrado.id.toString();
+      } else {
+        duenoSelect.value = "";
+      }
+    });
+
 
     const selectElemento = document.getElementById('id_resultado');
     const valorSeleccioado = selectElemento.value;
 
-    if (valorSeleccioado !== 'V') {
-      limpiarYBloquearInputs(inputsABloquear);
-    } else if (valorSeleccioado === 'T') {
-      limpiarYBloquearInputs(inputsABloquearSinJuez);
-    } else if (valorSeleccioado === 'D') {
-      limpiarYBloquearInputs(inputsABloquear);
-    } else {
+    if (valorSeleccioado === 'V') {
       habilitarInputs(inputsABloquear);
+    } else if (valorSeleccioado === 'T') {
+      habilitarInputs(inputsABloquear);
+      limpiarYBloquearInputs(inputsABloquearSinJuez);
+    } else {
+      limpiarYBloquearInputs(inputsABloquear);
     }
 
 
-    // Función genérica para añadir un nuevo galpón
     function añadirGalpon(selectId) {
       Swal.fire({
-        title: 'Ingresa nuevo galpón:',
-        input: 'text',
-        inputPlaceholder: 'Introduce el nombre aquí',
+        title: 'Ingresa nuevo galpón',
+        html:
+          '<div class="mb-3">' +
+          '<input id="swal-nombre" class="form-control" placeholder="Nombre del galpón">' +
+          '</div>' +
+          '<div class="mb-3">' +
+          '<select id="swal-dueno" class="form-select">' +
+          '<option value="">Seleccione un dueño</option>' +
+          duenosOptions
+            .map(d => `<option value="${d.id}">${d.nombre}</option>`)
+            .join('') +
+          '</select>' +
+          '</div>',
+        focusConfirm: false,
         showCancelButton: true,
         confirmButtonText: 'Registrar',
         cancelButtonText: 'Cancelar',
-        preConfirm: (inputValue) => {
-          if (!inputValue) {
-            Swal.showValidationMessage('¡Por favor, ingresa algo!');
+        customClass: {
+          popup: 'swal2-bootstrap-popup',
+          confirmButton: 'btn btn-primary me-2',
+          cancelButton: 'btn btn-secondary'
+        },
+        buttonsStyling: false,
+        width: '400px',
+        preConfirm: () => {
+          const nombre = document.getElementById('swal-nombre').value.trim();
+          const dueno = document.getElementById('swal-dueno').value;
+          if (!nombre) {
+            Swal.showValidationMessage('¡Por favor, ingresa el nombre del galpón!');
+          } else if (!dueno) {
+            Swal.showValidationMessage('¡Por favor, selecciona un dueño!');
           }
-          return inputValue;
+          return { nombre, dueno };
         }
       }).then((result) => {
         if (result.isConfirmed) {
-          const nombre = result.value;
-
+          const { nombre, dueno } = result.value;
           fetch("{% url 'galpon_create_ajax' %}", {
             method: 'POST',
             headers: {
               'X-CSRFToken': '{{ csrf_token }}',
+              'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: new URLSearchParams({
-              'nombre': nombre,
-            })
+            body: new URLSearchParams({ nombre, dueno })
           })
-            .then(response => response.json())
+            .then(res => res.json())
             .then(data => {
               if (data.success) {
                 const selectGalpon = document.getElementById(selectId);
                 const otroSelectId = (selectId === 'id_galpon1') ? 'id_galpon2' : 'id_galpon1';
                 const otroSelect = document.getElementById(otroSelectId);
-
-                // Crear la nueva opción
-                const nuevaOpcionGalpon = document.createElement('option');
-                nuevaOpcionGalpon.value = data.id;
-                nuevaOpcionGalpon.textContent = data.nombre;
-
-                // Añadir la nueva opción al select correspondiente
-                selectGalpon.appendChild(nuevaOpcionGalpon);
-
-                // Añadir la nueva opción al otro select
-                const nuevaOpcionOtroGalpon = nuevaOpcionGalpon.cloneNode(true);
-                otroSelect.appendChild(nuevaOpcionOtroGalpon);
-
-                // Seleccionar la nueva opción solo en el select correspondiente
-                nuevaOpcionGalpon.selected = true;
-
+                const nuevaOpcion = document.createElement('option');
+                nuevaOpcion.value = data.id;
+                nuevaOpcion.textContent = data.nombre + ' (' + data.dueno_nombre + ')';
+                selectGalpon.appendChild(nuevaOpcion);
+                otroSelect.appendChild(nuevaOpcion.cloneNode(true));
+                nuevaOpcion.selected = true;
                 Swal.fire('¡Éxito!', 'Galpón registrado correctamente.', 'success');
               } else {
                 Swal.fire('Error', data.error || 'No se pudo registrar.', 'error');
               }
             })
-            .catch(error => {
-              console.error(error);
+            .catch(() => {
               Swal.fire('Error', 'Error en la petición.', 'error');
             });
         }
@@ -648,6 +715,8 @@
                 selectDueno.appendChild(nuevaOpcionDueno);
 
                 nuevaOpcionDueno.selected = true;
+
+                duenosOptions.push({ id: data.id, nombre: data.nombre });
 
                 Swal.fire('¡Éxito!', 'Dueño registrado correctamente.', 'success');
               } else {
@@ -823,7 +892,6 @@
 
   function limpiarYBloquearInputs(arreglo) {
     arreglo.forEach(id => {
-
       const input = document.getElementById(id);
       input.value = '';
       input.disabled = true;
@@ -842,16 +910,15 @@
   selectResultado.addEventListener('change', function () {
     const valorSeleccionado = selectResultado.value;
     
-    if (valorSeleccionado !== 'V') {
-      limpiarYBloquearInputs(inputsABloquear);
-    } if (valorSeleccionado === 'T') {
+    if (valorSeleccionado === 'V') {
+      habilitarInputs(inputsABloquear);
+    } else if (valorSeleccionado === 'T') {
       habilitarInputs(inputsABloquear);
       limpiarYBloquearInputs(inputsABloquearSinJuez);
-    } else if (valorSeleccionado === 'D') {
-      limpiarYBloquearInputs(inputsABloquear);
     } else {
-      habilitarInputs(inputsABloquear);
+      limpiarYBloquearInputs(inputsABloquear);
     }
+
   });
 
 

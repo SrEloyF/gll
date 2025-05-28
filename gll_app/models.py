@@ -14,26 +14,47 @@ def imagen_upload_path_encuentros(instance, filename):
     return f"encuentros/{timestamp}_{base}{ext}"
 
 class Color(models.Model):
+    def save(self, *args, **kwargs):
+        self.nombre = self.nombre.upper()
+        super().save(*args, **kwargs)
+
     nombre = models.CharField(max_length=100, unique=True)
     def __str__(self):
         return self.nombre
     
 class Estado(models.Model):
+    def save(self, *args, **kwargs):
+        self.nombre = self.nombre.upper()
+        super().save(*args, **kwargs)
+
+    nombre = models.CharField(max_length=100, unique=True)
+    def __str__(self):
+        return self.nombre
+    
+class Dueno(models.Model):
+    def save(self, *args, **kwargs):
+        self.nombre = self.nombre.upper()
+        super().save(*args, **kwargs)
+
     nombre = models.CharField(max_length=100, unique=True)
     def __str__(self):
         return self.nombre
     
 class Galpon(models.Model):
-    nombre = models.CharField(max_length=100, unique=True)
-    def __str__(self):
-        return self.nombre
+    dueno = models.ForeignKey(Dueno, on_delete=models.PROTECT)#antes este campo no existía
+    def save(self, *args, **kwargs):
+        self.nombre = self.nombre.upper()
+        super().save(*args, **kwargs)
 
-class Dueno(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     def __str__(self):
         return self.nombre
     
 class DuenoAnterior(models.Model):
+    def save(self, *args, **kwargs):
+        self.nombre = self.nombre.upper()
+        super().save(*args, **kwargs)
+        
     nombre = models.CharField(max_length=100, unique=True)
     def __str__(self):
         return self.nombre

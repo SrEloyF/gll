@@ -18,7 +18,8 @@
             <table class="table table-hover table-striped table-sm m-0">
                 <thead class="table-light">
                     <tr>
-                        <th class="ps-3">Nombre</th>
+                        <th class="ps-3">Nombre</th>´
+                        <th class="ps-3">Dueño</th>
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
@@ -26,6 +27,7 @@
                     {% for galpon in galpones %}
                     <tr>
                         <td class="ps-3 align-middle">{{ galpon.nombre }}</td>
+                        <td class="ps-3 align-middle">{{ galpon.dueno }}</td>
                         <td class="text-center align-middle">
                             <div class="d-flex gap-1 justify-content-center">
                                 <a href="{% url 'galpon_edit' galpon.pk %}" 

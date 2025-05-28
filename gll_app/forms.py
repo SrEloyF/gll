@@ -102,9 +102,10 @@ class EstadoForm(forms.ModelForm):
 class GalponForm(forms.ModelForm):
     class Meta:
         model = Galpon
-        fields = ['nombre']
+        fields = ['nombre', 'dueno']
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del galpón'}),
+            'dueno': forms.Select(attrs={'class': 'form-control'})
         }
 
 class DuenoForm(forms.ModelForm):

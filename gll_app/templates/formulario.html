@@ -370,6 +370,29 @@
 
 <script>
 
+  function addUpperCaseListenerToSwalInputs() {
+    const observer = new MutationObserver((mutationsList) => {
+      mutationsList.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          const swalInputs = document.querySelectorAll('.swal2-input');
+          swalInputs.forEach(input => {
+            if (!input.hasAttribute('data-upper-case-listener')) {
+              input.addEventListener('input', () => {
+                input.value = input.value.toUpperCase();
+              });
+              input.setAttribute('data-upper-case-listener', 'true');
+            }
+          });
+        }
+      });
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+
   document.getElementById('{{ form.nombre_img.id_for_label }}').classList.add('form-control');
 
   // Inicialización de validación de Bootstrap
@@ -388,6 +411,7 @@
   })();
 
   document.addEventListener('DOMContentLoaded', function () {
+    addUpperCaseListenerToSwalInputs();
 
   const inputPlaca = document.getElementById('id_nroPlaca');
   const errDiv     = document.getElementById('placa-error');
