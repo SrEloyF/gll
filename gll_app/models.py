@@ -95,7 +95,7 @@ class Encuentro(models.Model):
         ('V', 'Victoria'),
         ('T', 'Tablas'),
         ('D', 'Derrota')
-    ])
+    ], default='V')
     video = models.FileField(upload_to=imagen_upload_path, null=True)
     condicionGallo = models.ForeignKey(Estado, on_delete=models.PROTECT)
     duenoEvento = models.ForeignKey(Dueno, on_delete=models.PROTECT)
@@ -103,10 +103,10 @@ class Encuentro(models.Model):
 
     # gastos fijos
     pactada = models.DecimalField(decimal_places=2, default=0, max_digits=10, validators=[MinValueValidator(0)])
-    pago_juez = models.DecimalField(decimal_places=2, default=0, max_digits=10, validators=[MinValueValidator(0)], null=True)
+    pago_juez = models.DecimalField(decimal_places=2, default=0, max_digits=10, null=True)
 
     # ganancias
     apuesta_general = models.DecimalField(decimal_places=2, max_digits=10, validators=[MinValueValidator(0)])
     premio_mayor = models.DecimalField(decimal_places=2, default=0, max_digits=10, validators=[MinValueValidator(0)])
-    porcentaje_premio_mayor = models.DecimalField(decimal_places=2, default=10, max_digits=5, validators=[MinValueValidator(0)])
+    porcentaje_premio_mayor = models.DecimalField(decimal_places=2, default=0, max_digits=5, validators=[MinValueValidator(0)])
     apuesta_por_fuera = models.DecimalField(decimal_places=2, default=0, max_digits=10, validators=[MinValueValidator(0)])

@@ -64,6 +64,7 @@ class EncuentroForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(EncuentroForm, self).__init__(*args, **kwargs)
+        self.fields['porcentaje_premio_mayor'].initial = 10
         for field in self.fields:
             self.fields[field].widget.attrs.update({
                 'class': 'form-control',
@@ -77,8 +78,11 @@ class EncuentroForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         premio_mayor = cleaned_data.get('premio_mayor')
+        porcentaje_premio_mayor = cleaned_data.get('porcentaje_premio_mayor')
         if premio_mayor is None:
             cleaned_data['premio_mayor'] = 0
+        if porcentaje_premio_mayor is None:
+            cleaned_data['porcentaje_premio_mayor'] = 0
 
         return cleaned_data
         
