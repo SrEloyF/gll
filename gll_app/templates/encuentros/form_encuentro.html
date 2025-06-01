@@ -201,6 +201,7 @@
             </div>
           </div>
 
+          <!--
           <div class="col-md-4">
             <div class="form-floating position-relative">
               {{ form.duenoEvento }}
@@ -216,6 +217,7 @@
               </div>
             </div>
           </div>
+          -->
 
         </div>
 
@@ -396,10 +398,7 @@
           </a>
         
           <div class="d-flex flex-column flex-md-row gap-2 order-0 order-md-1">
-            <a href="{% url 'dueno_create' %}" class="btn btn-outline-info">
-              <i class="bi bi-house me-1"></i>Registrar dueños
-            </a>
-            <a href="{% url 'galpon_create' %}" class="btn btn-outline-warning">
+            <a href="{% url 'galpon_create' %}" class="btn btn-outline-info">
               <i class="bi bi-house me-1"></i>Registrar galpones
             </a>
             <a href="{% url 'estado_create' %}" class="btn btn-outline-danger">
@@ -471,6 +470,7 @@
 
 <script>
   
+  /*
   const duenosOptions = [
     {% for dueno in duenos %}
       {
@@ -485,6 +485,7 @@
       {% if not forloop.last %},{% endif %}
     {% endfor %}
 ];
+*/
 
   function addUpperCaseListenerToSwalInputs() {
     const observer = new MutationObserver((mutationsList) => {
@@ -514,27 +515,6 @@
   document.addEventListener('DOMContentLoaded', function () {
     addUpperCaseListenerToSwalInputs();
 
-    document.getElementById('id_galpon2').addEventListener('change', function () {
-      let idOpcionSeleccionada = this.value;
-      const duenoSelect = document.getElementById('id_duenoEvento');
-
-      if (!idOpcionSeleccionada) {
-        duenoSelect.value = "";
-        return;
-      }
-
-      let duenoEncontrado = duenosOptions.find(dueno =>
-        dueno.galpones.some(galpon => galpon.id.toString() === idOpcionSeleccionada)
-      );
-
-      if (duenoEncontrado) {
-        duenoSelect.value = duenoEncontrado.id.toString();
-      } else {
-        duenoSelect.value = "";
-      }
-    });
-
-
     const selectElemento = document.getElementById('id_resultado');
     const valorSeleccioado = selectElemento.value;
 
@@ -548,76 +528,70 @@
     }
 
 
-    function añadirGalpon(selectId) {
-      Swal.fire({
-        title: 'Ingresa nuevo galpón',
-        html:
-          '<div class="mb-3">' +
-          '<input id="swal-nombre" class="form-control" placeholder="Nombre del galpón">' +
-          '</div>' +
-          '<div class="mb-3">' +
-          '<select id="swal-dueno" class="form-select">' +
-          '<option value="">Seleccione un dueño</option>' +
-          duenosOptions
-            .map(d => `<option value="${d.id}">${d.nombre}</option>`)
-            .join('') +
-          '</select>' +
-          '</div>',
-        focusConfirm: false,
-        showCancelButton: true,
-        confirmButtonText: 'Registrar',
-        cancelButtonText: 'Cancelar',
-        customClass: {
-          popup: 'swal2-bootstrap-popup',
-          confirmButton: 'btn btn-primary me-2',
-          cancelButton: 'btn btn-secondary'
-        },
-        buttonsStyling: false,
-        width: '400px',
-        preConfirm: () => {
-          const nombre = document.getElementById('swal-nombre').value.trim();
-          const dueno = document.getElementById('swal-dueno').value;
-          if (!nombre) {
-            Swal.showValidationMessage('¡Por favor, ingresa el nombre del galpón!');
-          } else if (!dueno) {
-            Swal.showValidationMessage('¡Por favor, selecciona un dueño!');
-          }
-          return { nombre, dueno };
-        }
-      }).then((result) => {
-        if (result.isConfirmed) {
-          const { nombre, dueno } = result.value;
-          fetch("{% url 'galpon_create_ajax' %}", {
-            method: 'POST',
-            headers: {
-              'X-CSRFToken': '{{ csrf_token }}',
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({ nombre, dueno })
-          })
-            .then(res => res.json())
-            .then(data => {
-              if (data.success) {
-                const selectGalpon = document.getElementById(selectId);
-                const otroSelectId = (selectId === 'id_galpon1') ? 'id_galpon2' : 'id_galpon1';
-                const otroSelect = document.getElementById(otroSelectId);
-                const nuevaOpcion = document.createElement('option');
-                nuevaOpcion.value = data.id;
-                nuevaOpcion.textContent = data.nombre + ' (' + data.dueno_nombre + ')';
-                selectGalpon.appendChild(nuevaOpcion);
-                otroSelect.appendChild(nuevaOpcion.cloneNode(true));
-                nuevaOpcion.selected = true;
-                Swal.fire('¡Éxito!', 'Galpón registrado correctamente.', 'success');
-              } else {
-                Swal.fire('Error', data.error || 'No se pudo registrar.', 'error');
-              }
-            })
-            .catch(() => {
-              Swal.fire('Error', 'Error en la petición.', 'error');
-            });
-        }
-      });
+function añadirGalpon(selectId) {
+  Swal.fire({
+    title: 'Registrar nuevo galpón',
+    html:
+      '<input id="swal-nombre" class="swal2-input" placeholder="Nombre del galpón">' +
+      '<input id="swal-dueno" class="swal2-input" placeholder="Dueño del galpón">',
+    focusConfirm: false,
+    showCancelButton: true,
+    confirmButtonText: 'Registrar',
+    cancelButtonText: 'Cancelar',
+    preConfirm: () => {
+      const nombre = document.getElementById('swal-nombre').value.trim();
+      const dueno = document.getElementById('swal-dueno').value.trim();
+
+      if (!nombre || !dueno) {
+        Swal.showValidationMessage('Ambos campos son obligatorios');
+      }
+
+      return { nombre, dueno };
     }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const { nombre, dueno } = result.value;
+
+      fetch("{% url 'galpon_create_ajax' %}", {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+        },
+        body: new URLSearchParams({
+          'nombre': nombre,
+          'dueno': dueno
+        })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const selectGalpon = document.getElementById(selectId);
+            const otroSelectId = (selectId === 'id_galpon1') ? 'id_galpon2' : 'id_galpon1';
+            const otroSelect = document.getElementById(otroSelectId);
+
+            const nuevaOpcionGalpon = document.createElement('option');
+            nuevaOpcionGalpon.value = data.id;
+            nuevaOpcionGalpon.textContent = `${data.nombre} (${data.dueno})`;
+
+            const nuevaOpcionOtroGalpon = nuevaOpcionGalpon.cloneNode(true);
+
+            selectGalpon.appendChild(nuevaOpcionGalpon);
+            otroSelect.appendChild(nuevaOpcionOtroGalpon);
+
+            nuevaOpcionGalpon.selected = true;
+
+            Swal.fire('¡Éxito!', 'Galpón registrado correctamente.', 'success');
+          } else {
+            Swal.fire('Error', data.error || 'No se pudo registrar.', 'error');
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          Swal.fire('Error', 'Error en la petición.', 'error');
+        });
+    }
+  });
+}
 
     function añadirEstado(selectId) {
       Swal.fire({
@@ -675,65 +649,10 @@
       });
     }
 
-    function añadirDueno(selectId) {
-      Swal.fire({
-        title: 'Ingresa nuevo dueño:',
-        input: 'text',
-        inputPlaceholder: 'Introduce el nombre aquí',
-        showCancelButton: true,
-        confirmButtonText: 'Registrar',
-        cancelButtonText: 'Cancelar',
-        preConfirm: (inputValue) => {
-          if (!inputValue) {
-            Swal.showValidationMessage('¡Por favor, ingresa algo!');
-          }
-          return inputValue;
-        }
-      }).then((result) => {
-        if (result.isConfirmed) {
-          const nombre = result.value;
-
-          fetch("{% url 'dueno_create_ajax' %}", {
-            method: 'POST',
-            headers: {
-              'X-CSRFToken': '{{ csrf_token }}',
-            },
-            body: new URLSearchParams({
-              'nombre': nombre,
-            })
-          })
-            .then(response => response.json())
-            .then(data => {
-              if (data.success) {
-                const selectDueno = document.getElementById(selectId);
-
-                // Crear la nueva opción para el select de dueño
-                const nuevaOpcionDueno = document.createElement('option');
-                nuevaOpcionDueno.value = data.id;
-                nuevaOpcionDueno.textContent = data.nombre;
-
-                selectDueno.appendChild(nuevaOpcionDueno);
-
-                nuevaOpcionDueno.selected = true;
-
-                duenosOptions.push({ id: data.id, nombre: data.nombre });
-
-                Swal.fire('¡Éxito!', 'Dueño registrado correctamente.', 'success');
-              } else {
-                Swal.fire('Error', data.error || 'No se pudo registrar.', 'error');
-              }
-            })
-            .catch(error => {
-              console.error(error);
-              Swal.fire('Error', 'Error en la petición.', 'error');
-            });
-        }
-      });
-    }
-
+    /*
     document.getElementById('btnAniadirDueno').addEventListener('click', function () {
       añadirDueno('id_duenoEvento');
-    });
+    });*/
 
     document.getElementById('btnAniadirEstado').addEventListener('click', function () {
       añadirEstado('id_condicionGallo');

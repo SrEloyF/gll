@@ -36,10 +36,10 @@ urlpatterns = [
     path('galpon/nuevo/ajax/', views.galpon_create_ajax, name='galpon_create_ajax'),
 
     # URLs para dueños
-    path('dueno', views.dueno_list, name='dueno_list'),
-    path('dueno/nuevo/', views.dueno_create, name='dueno_create'),
-    path('dueno/<int:pk>/editar/', views.dueno_edit, name='dueno_edit'),
-    path('dueno/nuevo/ajax/', views.dueno_create_ajax, name='dueno_create_ajax'),
+    #path('dueno', views.dueno_list, name='dueno_list'),
+    #path('dueno/nuevo/', views.dueno_create, name='dueno_create'),
+    #path('dueno/<int:pk>/editar/', views.dueno_edit, name='dueno_edit'),
+    #path('dueno/nuevo/ajax/', views.dueno_create_ajax, name='dueno_create_ajax'),
 
     # dueños anteriores
     path('duenoanterior/', views.duenoanterior_list, name='duenoanterior_list'),

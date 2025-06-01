@@ -49,7 +49,7 @@ class EncuentroForm(forms.ModelForm):
             'fechaYHora', 'galpon1', 'galpon2', 'video',
             'pactada', 'pago_juez', 'apuesta_general',
             'premio_mayor', 'porcentaje_premio_mayor', 'apuesta_por_fuera',
-            'resultado', 'condicionGallo', 'duenoEvento', 'imagen_evento',
+            'resultado', 'condicionGallo', 'imagen_evento',
         ]
         widgets = {
             'fechaYHora': forms.DateTimeInput(
@@ -58,7 +58,7 @@ class EncuentroForm(forms.ModelForm):
             ),
             'video': forms.ClearableFileInput(attrs={'accept': 'video/*'}),
             'resultado': forms.Select(attrs={'class': 'form-select'}),
-            'duenoEvento': forms.Select(attrs={'class': 'form-select'}),
+            #'duenoEvento': forms.Select(attrs={'class': 'form-select'}),
             'imagen_evento': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
         }
 
@@ -109,9 +109,9 @@ class GalponForm(forms.ModelForm):
         fields = ['nombre', 'dueno']
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del galpón'}),
-            'dueno': forms.Select(attrs={'class': 'form-control'})
+            'dueno': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del dueño del galpón'}),
         }
-
+"""
 class DuenoForm(forms.ModelForm):
     class Meta:
         model = Dueno
@@ -119,7 +119,7 @@ class DuenoForm(forms.ModelForm):
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del dueño'}),
         }
-
+"""
 class DuenoAnteriorForm(forms.ModelForm):
     class Meta:
         model = DuenoAnterior

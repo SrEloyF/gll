@@ -200,11 +200,9 @@ def crear_encuentro(request):
         form = EncuentroForm()
 
     gallos = Gallo.objects.all()
-    duenos = Dueno.objects.all()
     return render(request, 'encuentros/form_encuentro.html', {
         'form': form,
         'gallos': gallos,
-        'duenos': duenos
     })
 
 def listar_encuentros(request):
@@ -340,13 +338,11 @@ def encuentro_form(request, pk=None):
         form = EncuentroForm(instance=encuentro)
 
     gallos = Gallo.objects.all()
-    duenos = Dueno.objects.all().prefetch_related('galpon_set')
     return render(request, 'encuentros/form_encuentro.html', {
         'form': form,
         'gallos': gallos,
         'titulo': titulo,
         'encuentro': encuentro,
-        'duenos': duenos
     })
 
 def eliminar_encuentro(request, pk):
@@ -511,33 +507,24 @@ def galpon_create(request):
 # Vista para crear un galpón con ajax
 @csrf_exempt
 def galpon_create_ajax(request):
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Método no permitido.'}, status=405)
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        dueno = request.POST.get('dueno', '').strip()
 
-    nombre = request.POST.get('nombre', '').strip()
-    dueno_id = request.POST.get('dueno', '').strip()
+        if not nombre or not dueno:
+            return JsonResponse({'error': 'El nombre y el dueño son requeridos.'}, status=400)
 
-    if not nombre:
-        return JsonResponse({'error': 'El nombre es requerido.'}, status=400)
-    if not dueno_id:
-        return JsonResponse({'error': 'El dueño es requerido.'}, status=400)
+        if Galpon.objects.filter(nombre=nombre).exists():
+            return JsonResponse({'error': 'Ya existe un galpón con ese nombre.'}, status=400)
 
-    try:
-        dueno = Dueno.objects.get(pk=dueno_id)
-    except Dueno.DoesNotExist:
-        return JsonResponse({'error': 'Dueño no válido.'}, status=400)
-
-    if Galpon.objects.filter(nombre=nombre).exists():
-        return JsonResponse({'error': 'Ya existe un galpón con ese nombre.'}, status=400)
-
-    galpon = Galpon.objects.create(nombre=nombre, dueno=dueno)
-
-    return JsonResponse({
-        'success': True,
-        'id': galpon.id,
-        'nombre': galpon.nombre,
-        'dueno_nombre': galpon.dueno.nombre
-    })
+        galpon = Galpon.objects.create(nombre=nombre, dueno=dueno)
+        return JsonResponse({
+            'success': True,
+            'id': galpon.id,
+            'nombre': galpon.nombre,
+            'dueno': galpon.dueno
+        })
+    return JsonResponse({'error': 'Método no permitido.'}, status=405)
 
 # Vista para editar un galpón
 def galpon_edit(request, pk):
@@ -555,6 +542,7 @@ def galpon_edit(request, pk):
 
 # dueños
 # Vista para listar los dueños
+"""
 def dueno_list(request):
     error_eliminacion = False
 
@@ -611,6 +599,7 @@ def dueno_edit(request, pk):
         form = DuenoForm(instance=dueno)
     return render(request, 'duenos_eventos/form_dueno.html', {'form': form})
 
+"""
 
 
 #dueños anteriores:

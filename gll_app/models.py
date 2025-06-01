@@ -30,7 +30,8 @@ class Estado(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     def __str__(self):
         return self.nombre
-    
+
+"""   
 class Dueno(models.Model):
     def save(self, *args, **kwargs):
         self.nombre = self.nombre.upper()
@@ -39,16 +40,17 @@ class Dueno(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     def __str__(self):
         return self.nombre
+"""
     
 class Galpon(models.Model):
-    dueno = models.ForeignKey(Dueno, on_delete=models.PROTECT)#antes este campo no existía
     def save(self, *args, **kwargs):
         self.nombre = self.nombre.upper()
         super().save(*args, **kwargs)
 
     nombre = models.CharField(max_length=100, unique=True)
+    dueno = models.CharField(max_length=100)#nuevo campo
     def __str__(self):
-        return self.nombre
+        return self.nombre + " (" + self.dueno + ")"
     
 class DuenoAnterior(models.Model):
     def save(self, *args, **kwargs):
@@ -98,7 +100,7 @@ class Encuentro(models.Model):
     ], default='V')
     video = models.FileField(upload_to=imagen_upload_path, null=True)
     condicionGallo = models.ForeignKey(Estado, on_delete=models.PROTECT)
-    duenoEvento = models.ForeignKey(Dueno, on_delete=models.PROTECT)
+    #duenoEvento = models.ForeignKey(Dueno, on_delete=models.PROTECT)
     imagen_evento = models.ImageField(upload_to=imagen_upload_path_encuentros, null=True)
 
     # gastos fijos
