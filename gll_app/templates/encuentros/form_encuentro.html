@@ -3,16 +3,16 @@
 {% block title %}Registrar Encuentro{% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="container py-2 py-md-4">
   <div class="card shadow-sm">
-    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-      <h2 class="mb-0 d-flex align-items-center">
+    <div class="card-header bg-primary text-white d-flex flex-column flex-md-row justify-content-between align-items-center">
+      <h2 class="mb-2 mb-md-0 d-flex align-items-center fs-4 fs-md-3">
         <i class="bi bi-calendar-event me-2"></i>
         {{ titulo|default:"Registrar encuentro" }}
       </h2>
 
       {% if encuentro %}
-        <a class="btn btn-warning" href="{% url 'ver_encuentro' pk=encuentro.idEncuentro %}">
+        <a class="btn btn-warning mt-2 mt-md-0" href="{% url 'ver_encuentro' pk=encuentro.idEncuentro %}">
           Ver encuentro #{{ encuentro.idEncuentro }}
         </a>
       {% endif %}
@@ -25,9 +25,9 @@
 
         {% csrf_token %}
 
-        <!-- Primera fila del formulario -->
+        <!-- Primera fila del formulario - Responsive -->
         <div class="row g-3 mb-3">
-          <div class="col-md-6">
+          <div class="col-12 col-md-6">
             <label for="{{ form.fechaYHora.id_for_label }}" class="form-label">
               <i class="bi bi-calendar2-date me-1"></i>Fecha y hora
             </label>
@@ -39,7 +39,7 @@
             </div>
           </div>
 
-          <div class="col-md-6">
+          <div class="col-12 col-md-6">
             <label for="{{ form.video.id_for_label }}" class="form-label">
               <i class="bi bi-camera-video me-1"></i>{{ form.video.label }} (Opcional)
             </label>
@@ -55,7 +55,6 @@
               </span>
               {% endif %}
 
-              <!-- input file “manual” -->
               <input type="file" name="{{ form.video.name }}" id="{{ form.video.id_for_label }}" accept="video/*"
                 class="form-control" />
 
@@ -68,13 +67,11 @@
               {% if form.instance.video %}¿Cambiar video?{% else %}Sube tu video{% endif %} (MP4, MOV, AVI)
             </div>
           </div>
-
         </div>
 
-        <!-- Segunda fila del formulario -->
+        <!-- Segunda fila del formulario - Responsive -->
         <div class="row g-3 mb-3">
-
-          <div class="col-md-6">
+          <div class="col-12 col-md-6">
             <div class="form-floating position-relative">
               {{ form.galpon1 }}
               <label for="{{ form.galpon1.id_for_label }}">Galpón 1:</label>
@@ -90,7 +87,7 @@
             </div>
           </div>
 
-          <div class="col-md-6">
+          <div class="col-12 col-md-6">
             <div class="form-floating position-relative">
               {{ form.galpon2 }}
               <label for="{{ form.galpon1.id_for_label }}">Galpón 2:</label>
@@ -105,13 +102,11 @@
               </div>
             </div>
           </div>
-
         </div>
 
-        <!-- Tercera fila del formulario -->
+        <!-- Campos monetarios - Responsive -->
         <div class="row g-3 mb-3">
-
-          <div class="col-md-4">
+          <div class="col-12 col-md-4">
             <div class="input-group">
               <span class="input-group-text bg-light"><i class="bi bi-currency-dollar"></i></span>
               {{ form.pactada }}
@@ -120,7 +115,7 @@
             <label for="{{ form.pactada.id_for_label }}" class="form-label">{{ form.pactada.label }}</label>
           </div>
 
-          <div class="col-md-4">
+          <div class="col-12 col-md-4">
             <div class="input-group">
               <span class="input-group-text bg-light"><i class="bi bi-currency-dollar"></i></span>
               {{ form.apuesta_general }}
@@ -130,7 +125,7 @@
               {{ form.apuesta_general.label}}</label>
           </div>
 
-          <div class="col-md-4">
+          <div class="col-12 col-md-4">
             <div class="input-group">
               <span class="input-group-text bg-light"><i class="bi bi-cash-coin"></i></span>
               {{ form.pago_juez }}
@@ -140,10 +135,9 @@
           </div>
         </div>
 
-        <!-- Cuarta fila del formulario -->
+        <!-- Más campos monetarios - Responsive -->
         <div class="row g-3 mb-3">
-
-          <div class="col-md-4">
+          <div class="col-12 col-md-4">
             <div class="input-group">
               <span class="input-group-text bg-light"><i class="bi bi-cash-stack"></i></span>
               {{ form.apuesta_por_fuera }}
@@ -153,7 +147,7 @@
               {{ form.apuesta_por_fuera.label}}</label>
           </div>
 
-          <div class="col-md-4">
+          <div class="col-12 col-md-4">
             <div class="input-group">
               <span class="input-group-text bg-light"><i class="bi bi-trophy"></i></span>
               {{ form.premio_mayor }}
@@ -162,7 +156,7 @@
             <label for="{{ form.premio_mayor.id_for_label }}" class="form-label">Valor total del pollón</label>
           </div>
 
-          <div class="col-md-4">
+          <div class="col-12 col-md-4">
             <div class="input-group">
               <span class="input-group-text bg-light"><i class="bi bi-percent"></i></span>
               {{ form.porcentaje_premio_mayor }}
@@ -170,12 +164,11 @@
             </div>
             <label for="{{ form.porcentaje_premio_mayor.id_for_label }}" class="form-label">% de la apuesta general para el careador</label>
           </div>
-
         </div>
 
-        <!-- Quinta fila del formulario -->
+        <!-- Resultado y condición - Responsive -->
         <div class="row g-3 mb-3">
-          <div class="col-md-4">
+          <div class="col-12 col-md-4">
             <div class="input-group">
               <span class="input-group-text bg-light"><i class="bi bi-flag me-1"></i></span>
               {{ form.resultado }}
@@ -185,7 +178,7 @@
             </label>
           </div>
           
-          <div class="col-md-4">
+          <div class="col-12 col-md-4">
             <div class="form-floating position-relative">
               {{ form.condicionGallo }}
               <label for="{{ form.condicionGallo.id_for_label }}">Condición del gallo luego del encuentro</label>
@@ -200,58 +193,38 @@
               </div>
             </div>
           </div>
+          
+          <div class="col-12 col-md-4">
+            <label for="{{ form.imagen_evento.id_for_label }}" class="form-label">
+              <i class="bi bi-image me-1"></i>Imagen del evento (Opcional)
+            </label>
 
-          <!--
-          <div class="col-md-4">
-            <div class="form-floating position-relative">
-              {{ form.duenoEvento }}
-              <label for="{{ form.duenoEvento.id_for_label }}">Dueño del evento</label>
-              
-              <div class="position-absolute end-0 top-0 d-flex mt-2 me-2">
-                <div class="input-group-text">
-                  <i class="bi bi-person text-primary"></i>
-                </div>
-                <button class="btn btn-success ms-2" id="btnAniadirDueno" type="button">
-                  <i class="bi bi-plus text-white"></i>
-                </button>
-              </div>
+            <div class="input-group">
+              {% if form.instance.imagen_evento %}
+              <span class="input-group-text text-truncate" style="max-width: 150px;"
+                title="{{ form.instance.imagen_evento.name }}">
+                <small class="text-muted d-block mb-0">Actual:</small>
+                <a href="{{ form.instance.imagen_evento.url }}" class="d-block text-truncate text-decoration-none">
+                  {{ form.instance.imagen_evento.name }}
+                </a>
+              </span>
+              {% endif %}
+
+              <input type="file" name="{{ form.imagen_evento.name }}" id="{{ form.imagen_evento.id_for_label }}" accept="image/*"
+                class="form-control" />
+
+              <button class="btn btn-outline-secondary" type="button">
+                <i class="bi bi-upload"></i>
+              </button>
+            </div>
+
+            <div class="form-text text-muted mt-1">
+              {% if form.instance.imagen_evento %}¿Cambiar?{% else %}Subir{% endif %} (JPG, PNG)
             </div>
           </div>
-          -->
-
         </div>
 
-<div class="col-md-6">
-  <label for="{{ form.imagen_evento.id_for_label }}" class="form-label">
-    <i class="bi bi-image me-1"></i>Imagen principal del evento (Opcional)
-  </label>
-
-  <div class="input-group">
-    {% if form.instance.imagen_evento %}
-    <span class="input-group-text text-truncate" style="max-width: 150px;"
-      title="{{ form.instance.imagen_evento.name }}">
-      <small class="text-muted d-block mb-0">Actual:</small>
-      <a href="{{ form.instance.imagen_evento.url }}" class="d-block text-truncate text-decoration-none">
-        {{ form.instance.imagen_evento.name }}
-      </a>
-    </span>
-    {% endif %}
-
-    <input type="file" name="{{ form.imagen_evento.name }}" id="{{ form.imagen_evento.id_for_label }}" accept="image/*"
-      class="form-control" />
-
-    <button class="btn btn-outline-secondary" type="button">
-      <i class="bi bi-upload"></i>
-    </button>
-  </div>
-
-  <div class="form-text text-muted mt-1">
-    {% if form.instance.imagen_evento %}¿Cambiar imagen?{% else %}Sube una imagen{% endif %} (JPG, PNG)
-  </div>
-</div>
-
-
-        <!-- Selección de gallo -->
+        <!-- Selección de gallo - Responsive -->
         <div class="card mt-4 mb-4 border-primary">
           <div class="card-header bg-light">
             <h5 class="mb-0">
@@ -259,42 +232,44 @@
             </h5>
           </div>
           <div class="card-body">
-            <div class="d-flex align-items-center">
-              <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+            <div class="d-flex flex-column flex-md-row align-items-center">
+              <button type="button" class="btn btn-outline-primary mb-2 mb-md-0" data-bs-toggle="modal"
                 data-bs-target="#modalParticipantes">
                 <i class="bi bi-search me-1"></i>Seleccionar Gallo
               </button>
 
-              <div id="galloSeleccionado" class="ms-3">
+              <div id="galloSeleccionado" class="ms-md-3 text-center text-md-start">
                 {% if encuentro and encuentro.gallo %}
-                <span class="badge bg-success p-2">
+                <span class="badge bg-success p-2 mt-2 mt-md-0">
                   <i class="bi bi-tag-fill me-1"></i>Placa {{ encuentro.gallo.nroPlaca }}
                 </span>
                 {% else %}
-                <span class="badge bg-secondary p-2">No seleccionado</span>
+                <span class="badge bg-secondary p-2 mt-2 mt-md-0">No seleccionado</span>
                 {% endif %}
               </div>
             </div>
 
-            <!-- Campo oculto para el gallo -->
             <input type="hidden" name="gallo" id="galloHidden" value="{{ encuentro.gallo.idGallo|default:'' }}">
           </div>
         </div>
 
-        <button type="button" id="btnCalcularGastos" class="btn btn-danger">
-          <i class="bi bi-calculator me-2"></i>Calcular
-        </button>
+        <div class="d-grid">
+          <button type="button" id="btnCalcularGastos" class="btn btn-danger">
+            <i class="bi bi-calculator me-2"></i>Calcular Gastos
+          </button>
+        </div>
 
+        <!-- Sección de cálculos - Responsive -->
         <div class="card mt-4 mb-4 border-primary" id="cardCalculos" style="display: none;">
           <div class="card-header bg-light">
             <h5 class="mb-0">
-              <i class="bi bi-calculator me-2"></i>Calculos
+              <i class="bi bi-calculator me-2"></i>Cálculos del Encuentro
             </h5>
           </div>
           <div class="card-body">
             <div class="row">
-              <!-- Columna Izquierda -->
-              <div class="col-md-6 mb-4">
+              <!-- Columna Izquierda - Responsive -->
+              <div class="col-12 col-md-6 mb-4">
                 <div class="bg-light p-3 rounded mb-3">
                   <h5 class="text-primary mb-3"><i class="bi bi-coin me-2"></i>Detalles de Apuestas</h5>
 
@@ -344,10 +319,8 @@
                 </div>
               </div>
 
-              <!-- Columna Derecha -->
-              <div class="col-md-6">
-
-
+              <!-- Columna Derecha - Responsive -->
+              <div class="col-12 col-md-6">
                 <div class="bg-light p-3 rounded mb-3">
                   <h5 class="text-primary mb-3"><i class="bi bi-graph-up me-2"></i>Ganancias</h5>
                   <div class="mb-2">
@@ -385,27 +358,29 @@
               </div>
             </div>
 
-            <button type="button" class="btn btn-danger mt-3" id="btnCerrarCalculos">
-              <i class="bi bi-x-circle me-2"></i>Cerrar ventana de cálculos
-            </button>
+            <div class="d-grid">
+              <button type="button" class="btn btn-danger mt-3" id="btnCerrarCalculos">
+                <i class="bi bi-x-circle me-2"></i>Cerrar cálculos
+              </button>
+            </div>
           </div>
-
         </div>
 
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center align-items-md-start gap-3 mt-4">
-          <a href="{% url 'listar_encuentros' %}" class="btn btn-outline-secondary order-1 order-md-0">
-            <i class="bi bi-arrow-left me-1"></i>Volver al listado de encuentros
+        <!-- Botones finales - Responsive -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mt-4">
+          <a href="{% url 'listar_encuentros' %}" class="btn btn-outline-secondary order-1 order-md-0 w-100 w-md-auto">
+            <i class="bi bi-arrow-left me-1"></i>Volver
           </a>
         
-          <div class="d-flex flex-column flex-md-row gap-2 order-0 order-md-1">
+          <div class="d-flex flex-column flex-md-row gap-2 order-0 order-md-1 w-100 w-md-auto">
             <a href="{% url 'galpon_create' %}" class="btn btn-outline-info">
-              <i class="bi bi-house me-1"></i>Registrar galpones
+              <i class="bi bi-house me-1 d-none d-md-inline"></i>Galpones
             </a>
             <a href="{% url 'estado_create' %}" class="btn btn-outline-danger">
-              <i class="bi bi-clipboard2-plus me-1"></i>Registrar estados
+              <i class="bi bi-clipboard2-plus me-1 d-none d-md-inline"></i>Estados
             </a>
             <button type="submit" class="btn btn-success">
-              <i class="bi bi-save me-1"></i>Guardar Encuentro
+              <i class="bi bi-save me-1"></i>Guardar
             </button>
           </div>
         </div>

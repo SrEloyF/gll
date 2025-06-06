@@ -1,5 +1,6 @@
 from django import forms
 from .models import *
+from datetime import date
 
 class GalloForm(forms.ModelForm):
     class Meta:
@@ -41,6 +42,10 @@ class GalloForm(forms.ModelForm):
         required=False,
         widget=forms.Select(attrs={'class': 'form-control'})
     )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        hoy = date.today().strftime('%Y-%m-%d')
+        self.fields['fechaNac'].widget.attrs['max'] = hoy
 
 class EncuentroForm(forms.ModelForm):
     class Meta:

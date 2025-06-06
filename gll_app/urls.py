@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('gallos/ajax/', views.gallo_list_ajax, name='gallo_list_ajax'),
     path('ver/<int:idGallo>/', views.ver, name='ver'),
     path('crear/', views.crear, name='crear'),
     path('editar/<int:idGallo>/', views.editar, name='editar'),
@@ -46,4 +47,6 @@ urlpatterns = [
     path('duenoanterior/nuevo/', views.duenoanterior_create, name='duenoanterior_create'),
     path('duenoanterior/<int:pk>/editar/', views.duenoanterior_edit, name='duenoanterior_edit'),
     path('duenoanterior/nuevo/ajax/', views.duenoanterior_create_ajax, name='duenoanterior_create_ajax'),
+
+    path('export-db/', views.export_db, name='export_db'),
 ]

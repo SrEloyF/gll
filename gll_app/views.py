@@ -13,6 +13,8 @@ from datetime import datetime
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
+
+paginas = 2
 def export_db(request):
     db_settings = settings.DATABASES['default']
     connection = pymysql.connect(
@@ -54,24 +56,49 @@ def export_db(request):
         connection.close()
 
 def index(request):
-    gallos = Gallo.objects.all()
-    paginator = Paginator(gallos, 10)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    sexo_inicial = 'todos'
+    page_inicial = request.GET.get('page', 1)
     error_eliminacion = request.GET.get('error_eliminacion') == '1'
+
+    if sexo_inicial == 'todos':
+        queryset = Gallo.objects.all()
+    else:
+        queryset = Gallo.objects.filter(sexo=sexo_inicial)
+
+    paginator = Paginator(queryset, paginas)
+    page_obj = paginator.get_page(page_inicial)
+
+    cantidad_machos = Gallo.objects.filter(sexo='M').count()
+    cantidad_hembras = Gallo.objects.filter(sexo='H').count()
+    total_gallos = cantidad_machos + cantidad_hembras
 
     return render(request, 'index.html', {
         'page_obj': page_obj,
-        'error_eliminacion': error_eliminacion
+        'sexo_actual': sexo_inicial,
+        'cantidad_machos': cantidad_machos,
+        'cantidad_hembras': cantidad_hembras,
+        'total_gallos': total_gallos,
+        'error_eliminacion': error_eliminacion,
     })
-"""
-def ver(request, idGallo):
-    gallo = get_object_or_404(Gallo, idGallo=idGallo)
-    edadGallo = now().date() - gallo.fechaNac
-    edadGallo = edadGallo.days / 365
-    edadGallo = round(edadGallo, 1)
-    return render(request, 'ver.html', {'gallo': gallo, 'edadGallo': edadGallo})
-"""
+
+def gallo_list_ajax(request):
+    sexo = request.GET.get('sexo', 'todos')
+    page = request.GET.get('page', 1)
+
+    if sexo == 'machos':
+        queryset = Gallo.objects.filter(sexo='M')
+    elif sexo == 'hembras':
+        queryset = Gallo.objects.filter(sexo='H')
+    else:
+        queryset = Gallo.objects.all()
+
+    paginator = Paginator(queryset, paginas)
+    page_obj = paginator.get_page(page)
+
+    return render(request, 'partials/gallo_list.html', {
+        'page_obj': page_obj,
+        'sexo_actual': sexo,
+    })
 
 def ver(request, idGallo):
     gallo = get_object_or_404(Gallo, idGallo=idGallo)
